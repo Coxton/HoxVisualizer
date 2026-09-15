@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require('electron/main')
-const path = require('node:path')
+const { app, BrowserWindow, ipcMain } = require("electron/main");
+const path = require("node:path");
+import AudioCapture from "../audio/capture/AudioCapture";
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -7,15 +8,23 @@ const createWindow = () => {
         height: 600,
 
         webPreferences: {
-            preload: path.join(__dirname, '../preload/preload.ts'),
-            sandbox: false,
+            preload: path.join(__dirname, "../preload/preload.js"),
         }
-    })
+    });
 
-    win.loadFile('src/renderer/index.html')
-}
+    win.loadFile("src/renderer/index.html");
+};
 
 app.whenReady().then(() => {
-    ipcMain.handle('ping', () => 'pong')
-    createWindow()
-})
+
+    createWindow();
+
+    const audioCapture = new AudioCapture();
+
+    audioCapture.startSystemAudio((data: Buffer) => {
+        console.log({
+            bytes: data.length,
+            firstBytes: data.subarray(0, 16)
+        });
+    });
+});
