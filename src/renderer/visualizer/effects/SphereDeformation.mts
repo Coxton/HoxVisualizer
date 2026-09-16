@@ -50,66 +50,42 @@ export default class SphereDeformation {
 
         const bassStrength = bass * bass;
 
-        const angle = Math.atan2(z, x);
-        const normalizedAngle =
-            (angle + Math.PI) / (2 * Math.PI);
-
-        const frequencyIndex = Math.floor(
-            normalizedAngle * (spectrum?.length ?? 1)
-        );
+        //TODO::add back FFT Mapping
 
         let frequency = 0;
 
         if (spectrum) {
-
-            const range = 3;
-
-            let sum = 0;
-            let count = 0;
-
-            for (
-                let offset = -range;
-                offset <= range;
-                offset++
-            ) {
-
-                const spectrumLength = spectrum.length;
-
-                const index =
-                    (frequencyIndex + offset + spectrumLength) %
-                    spectrumLength;
-
-                sum += spectrum[index];
-                count++;
-            }
-
-            frequency = count > 0
-                ? sum / count
-                : 0;
+            frequency = spectrum[0];
         }
 
         const spectrumStrength = frequency * frequency;
 
+        const audioInfluence =
+            bassStrength +
+            spectrumStrength * 0.25;
+
         const deformation =
             1 +
-            bassStrength * 0.4 * wave +
-            bassStrength * 0.2 * secondaryWave +
-            spectrumStrength * 0.25 * wave;
+            audioInfluence * 0.4 * wave +
+            audioInfluence * 0.2 * secondaryWave;
 
-        this.position.setXYZ(
-            i,
-            (x / length) * deformation,
-            (y / length) * deformation,
-            (z / length) * deformation
-        );
+        const minimumDeformation = 0.6;
 
-        if (deformation <= 0) {
-            console.log("Invalid deformation:", deformation);
+        const safeDeformation =
+            Math.max(deformation, minimumDeformation);
+
+                    this.position.setXYZ(
+                        i,
+                        (x / length) * safeDeformation,
+                        (y / length) * safeDeformation,
+                        (z / length) * safeDeformation
+                    );
+
+
+            }
+
+            this.position.needsUpdate = true;
+
+            this.geometry.computeVertexNormals();
         }
-    }
-
-    this.position.needsUpdate = true;
-
-    this.geometry.computeVertexNormals();
-}
 }

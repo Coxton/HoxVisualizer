@@ -20,6 +20,7 @@ export default class SceneManager {
             color: 0xffffff,
             emissive: 0xffffff,
             emissiveIntensity: 0
+            
         });
 
         this.sphere = new THREE.Mesh(
