@@ -1,16 +1,11 @@
+import Visualizer from "./visualizer/Visualizer.mjs";
+
 console.log("Renderer loaded");
 
-const visualizer = document.getElementById("visualizer");
+const visualizer = new Visualizer();
 
-if (!visualizer) {
-    throw new Error("Visualizer element not found");
-}
+visualizer.start();
 
 window.audio.onData((data) => {
-    const scale = 1 + data.volume * 10;
-
-    visualizer.style.setProperty(
-        "--audio-scale",
-        scale.toString()
-    );
+    visualizer.update(data);
 });

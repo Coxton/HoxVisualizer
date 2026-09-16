@@ -17,25 +17,30 @@ export default class AudioAnalyzer {
 
         const samples = this.convertToFloat32(frame.data);
 
-        const frequencyData =
-            this.fftAnalyzer.analyze(samples);
+        const frequencyData = this.fftAnalyzer.analyze(samples);
 
-        const frequencyBands =
-            this.frequencyBandAnalyzer.analyze(frequencyData);
+        const normalizedSpectrum =
+            this.normalizer.normalizeSpectrum(
+                frequencyData.magnitudes
+            );
 
-        const normalizedBands =
-            this.normalizer.normalize(frequencyBands);
+        const frequencyBands = this.frequencyBandAnalyzer.analyze(frequencyData);
 
-        const smoothedBands =
-            this.smoother.smooth(normalizedBands);    
+        const volume = this.calculateRMS(samples);
+
+        const normalizedVolume = this.normalizer.normalizeVolume(volume);
+        const normalizedBands = this.normalizer.normalizeBands(frequencyBands);
+
+        const smoothedBands = this.smoother.smooth(normalizedBands);
 
 
 
         return {
-            volume: this.calculateRMS(samples),
+            volume: normalizedVolume,
             peak: this.calculatePeak(samples),
             waveform: samples,
             frequencyData,
+            normalizedSpectrum,
             frequencyBands: smoothedBands,
             timestamp: frame.timestamp
         };

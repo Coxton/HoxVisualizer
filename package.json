@@ -14,15 +14,19 @@
     "main": "dist/main/main.js",
     "scripts": {
         "build": "tsc",
-        "start": "npm run build && electron ."
+        "start": "npm run build && electron .",
+        "build:renderer": "vite build"
     },
     "devDependencies": {
         "@types/node": "^26.5.1",
+        "@types/three": "^0.186.0",
         "electron": "^44.3.0",
-        "typescript": "^7.0.2"
+        "typescript": "^7.0.2",
+        "vite": "^8.3.0"
     },
     "dependencies": {
         "fft.js": "^4.0.4",
-        "loopback-capture": "^3.0.2"
+        "loopback-capture": "^3.0.2",
+        "three": "^0.186.0"
     }
 }

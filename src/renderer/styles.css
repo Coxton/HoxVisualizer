@@ -6,17 +6,3 @@ body {
     overflow: hidden;
     background: #050505;
 }
-
-#visualizer {
-    width: 200px;
-    height: 200px;
-    background: white;
-    margin: auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%) scale(var(--audio-scale));
-    border-radius: 50%;
-    --audio-scale: 1;
-
-    transition: transform 80ms linear;
-}
