@@ -1,6 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require("electron/main");
-const path = require("node:path");
-import AudioCapture from "../audio/capture/AudioCapture";
+import { app, BrowserWindow } from "electron/main";
+import path from "node:path";
+
+import AudioManager from "../audio/AudioManager";
+import AudioAnalyzer from "../audio/analysis/AudioAnalyzer";
+import AudioIPC from "./ipc/AudioIPC";
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -12,19 +15,27 @@ const createWindow = () => {
         }
     });
 
-    win.loadFile("src/renderer/index.html");
+    win.loadFile(path.join(__dirname, "../renderer/index.html"));
+
+    return win;
 };
 
 app.whenReady().then(() => {
+    const win = createWindow();
 
-    createWindow();
+    const audioManager = new AudioManager();
+    const audioAnalyzer = new AudioAnalyzer();
+    const audioIPC = new AudioIPC(win);
 
-    const audioCapture = new AudioCapture();
+    win.webContents.once("did-finish-load", () => {
+        console.log("Renderer finished loading");
 
-    audioCapture.startSystemAudio((data: Buffer) => {
-        console.log({
-            bytes: data.length,
-            firstBytes: data.subarray(0, 16)
+        audioManager.start((frame) => {
+            //console.log("Main received audio frame");
+
+            const analyzed = audioAnalyzer.analyze(frame);
+
+            audioIPC.sendAudioData(analyzed);
         });
     });
 });

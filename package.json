@@ -1,28 +1,28 @@
 {
-  "name": "hoxvisualizer",
-  "version": "1.0.0",
-  "description": "Electron based Audio visualizer",
-  "homepage": "https://github.com/Coxton/HoxVisualizer#readme",
-  "bugs": {
-    "url": "https://github.com/Coxton/HoxVisualizer/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Coxton/HoxVisualizer.git"
-  },
-  "author": "Hoxton",
-  "type": "commonjs",
-  "main": "dist/main/main.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "npm run build && electron ."
-  },
-  "devDependencies": {
-    "@types/node": "^26.5.1",
-    "electron": "^44.3.0",
-    "typescript": "^7.0.2"
-  },
-  "dependencies": {
-    "loopback-capture": "^3.0.2"
-  }
+    "name": "hoxvisualizer",
+    "version": "1.0.0",
+    "description": "Electron based Audio visualizer",
+    "homepage": "https://github.com/Coxton/HoxVisualizer#readme",
+    "bugs": {
+        "url": "https://github.com/Coxton/HoxVisualizer/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Coxton/HoxVisualizer.git"
+    },
+    "author": "Hoxton",
+    "main": "dist/main/main.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "npm run build && electron ."
+    },
+    "devDependencies": {
+        "@types/node": "^26.5.1",
+        "electron": "^44.3.0",
+        "typescript": "^7.0.2"
+    },
+    "dependencies": {
+        "fft.js": "^4.0.4",
+        "loopback-capture": "^3.0.2"
+    }
 }

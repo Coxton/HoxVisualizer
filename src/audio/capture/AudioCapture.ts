@@ -1,11 +1,26 @@
 import loopback from "loopback-capture";
+import { AudioFrame } from "../models/AudioFrame";
 
 export default class AudioCapture {
 
     private capture = new loopback.LoopbackCapture();
 
-    startSystemAudio(onAudioData: (data: Buffer) => void): void {
-        this.capture.startSystemAudio(onAudioData);
+    private frameCount = 0;
+
+    startSystemAudio(onAudioData: (frame: AudioFrame) => void): void {
+        this.capture.startSystemAudio((data: Buffer) => {
+
+
+            const frame: AudioFrame = {
+                data,
+                sampleRate: 48000,
+                channels: 2,
+                timestamp: Date.now()
+            };
+
+            onAudioData(frame);
+
+        });
     }
 
     stop(): void {
