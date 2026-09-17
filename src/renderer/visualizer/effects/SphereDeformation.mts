@@ -1,7 +1,9 @@
 import * as THREE from "three";
 import type { AnalyzedAudio } from "../../../audio/models/AnalyzedAudio.js";
+import type { VisualizerEffect } from "./VisualizerEffect.js";
 
-export default class SphereDeformation {
+
+export default class SphereDeformation implements VisualizerEffect {
 
     private readonly geometry: THREE.SphereGeometry;
     private readonly position: THREE.BufferAttribute;
@@ -17,10 +19,10 @@ export default class SphereDeformation {
             new Float32Array(this.position.array);
     }
 
-    apply(
-    audio: AnalyzedAudio | null,
-    elapsedTime: number
-): void {
+    update(
+        audio: AnalyzedAudio | null,
+        elapsedTime: number
+    ): void {
 
     const bass = audio?.frequencyBands.bass ?? 0;
 
@@ -61,8 +63,7 @@ export default class SphereDeformation {
         const spectrumStrength = frequency * frequency;
 
         const audioInfluence =
-            bassStrength +
-            spectrumStrength * 0.25;
+            bassStrength;
 
         const deformation =
             1 +

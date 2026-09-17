@@ -1,33 +1,21 @@
 import * as THREE from "three";
+import ParticleField from "../environment/ParticleField.mjs";
+import Nebula from "../themes/nebula/Nebula.mjs";
 
 export default class SceneManager {
 
     readonly scene: THREE.Scene;
-    readonly sphere: THREE.Mesh;
-    readonly sphereGeometry: THREE.SphereGeometry;
-    readonly sphereMaterial: THREE.MeshStandardMaterial;
+    readonly particleField: ParticleField;
+    readonly nebula: Nebula;
 
     constructor() {
         this.scene = new THREE.Scene();
 
-        this.sphereGeometry = new THREE.SphereGeometry(
-            1,
-            64,
-            64
+        this.particleField = new ParticleField(
+            this.scene
         );
 
-        this.sphereMaterial = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            emissive: 0xffffff,
-            emissiveIntensity: 0
-            
-        });
-
-        this.sphere = new THREE.Mesh(
-            this.sphereGeometry,
-            this.sphereMaterial
-        );
-
-        this.scene.add(this.sphere);
+        this.nebula = new Nebula(this.scene);
+        
     }
 }

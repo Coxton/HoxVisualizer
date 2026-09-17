@@ -5,7 +5,6 @@ export default class AudioCapture {
 
     private capture = new loopback.LoopbackCapture();
 
-    private frameCount = 0;
 
     startSystemAudio(onAudioData: (frame: AudioFrame) => void): void {
         this.capture.startSystemAudio((data: Buffer) => {
@@ -21,6 +20,26 @@ export default class AudioCapture {
             onAudioData(frame);
 
         });
+    }
+
+        startProcessAudio(
+        processId: number,
+        onAudioData: (frame: AudioFrame) => void
+    ): void {
+        this.capture.start(
+            processId,
+            false,
+            (data: Buffer) => {
+                const frame: AudioFrame = {
+                    data,
+                    sampleRate: 48000,
+                    channels: 2,
+                    timestamp: Date.now()
+                };
+
+                onAudioData(frame);
+            }
+        );
     }
 
     stop(): void {

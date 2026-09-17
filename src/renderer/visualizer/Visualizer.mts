@@ -1,13 +1,13 @@
 import * as THREE from "three";
 import type { AnalyzedAudio } from "../../audio/models/AnalyzedAudio.js";
 
-import SphereDeformation from "./effects/SphereDeformation.mjs";
+import EffectManager from "./effects/EffectManager.mjs";
 import SceneManager from "./rendering/SceneManager.mjs";
 import CameraManager from "./rendering/CameraManager.mjs";
 import Renderer from "./rendering/Renderer.mjs";
 
 class Visualizer {
-    private readonly sphereDeformation: SphereDeformation;
+    private readonly effectManager: EffectManager;
     private readonly sceneManager: SceneManager;
     private readonly cameraManager: CameraManager;
     private readonly renderer: Renderer;
@@ -28,11 +28,11 @@ class Visualizer {
 
         this.sceneManager = new SceneManager();
 
-        this.sphereDeformation = new SphereDeformation(
-            this.sceneManager.sphereGeometry
-        );
+        this.effectManager = new EffectManager();
 
         this.cameraManager = new CameraManager();
+
+
 
 
         //add Light
@@ -46,6 +46,8 @@ class Visualizer {
             2,
             4
         );
+
+        this.sceneManager.scene.add(light);
 
         this.setupEventListeners();
 
@@ -63,23 +65,25 @@ class Visualizer {
         this.timer.update();
 
         const deltaTime = this.timer.getDelta();
+        const bass =
+        this.audio?.frequencyBands.bass ?? 0;
 
         this.elapsedTime += deltaTime;
 
-        this.sphereDeformation.apply(
+        this.effectManager.update(
             this.audio,
             this.elapsedTime
         );
 
-        const mid = this.audio?.frequencyBands.mid ?? 0;
-        const treble = this.audio?.frequencyBands.treble ?? 0;
+        this.sceneManager.nebula.update(
+            this.elapsedTime,
+            bass
+        );
 
-        this.sceneManager.sphereMaterial.emissiveIntensity = treble;
+        this.sceneManager.particleField.update(
+            this.elapsedTime
+        );
 
-        const rotationSpeed = 0.3 + mid * 1.2;
-
-        this.sceneManager.sphere.rotation.x += rotationSpeed * deltaTime;
-        this.sceneManager.sphere.rotation.y += rotationSpeed * deltaTime;
 
 
         this.renderer.render(

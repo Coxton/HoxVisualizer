@@ -30,7 +30,7 @@ app.whenReady().then(() => {
     win.webContents.once("did-finish-load", () => {
         console.log("Renderer finished loading");
 
-        audioManager.start((frame) => {
+        audioManager.startSystemAudio((frame) => {
             //console.log("Main received audio frame");
 
             const analyzed = audioAnalyzer.analyze(frame);
