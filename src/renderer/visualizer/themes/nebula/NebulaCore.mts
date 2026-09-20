@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import type { AnalyzedAudio } from "../../../../audio/models/AnalyzedAudio.js";
 
 export default class NebulaCore {
     readonly points: THREE.Points;
@@ -138,9 +139,10 @@ export default class NebulaCore {
     }
 
     update(
-            elapsedTime: number,
-            bass: number
-        ): void {
+        elapsedTime: number,
+        audio: AnalyzedAudio | null
+    ): void {
+
         this.points.rotation.y =
             elapsedTime * 0.05;
 
@@ -150,10 +152,32 @@ export default class NebulaCore {
         this.innerPoints.rotation.x =
             elapsedTime * 0.03;
 
+        const impact =
+            audio?.impactEnvelope ?? 0;
+
         const positionAttribute =
-        this.points.geometry.getAttribute(
-            "position"
-        ) as THREE.BufferAttribute;   
+            this.points.geometry.getAttribute(
+                "position"
+            ) as THREE.BufferAttribute;
+
+        const transients =
+            audio?.transients;
+            
+        const bassTransient =
+            transients?.bass ?? 0;
+
+        const lowMidTransient =
+            transients?.lowMid ?? 0;
+
+        const midTransient =
+            transients?.mid ?? 0;
+
+        const highMidTransient =
+            transients?.highMid ?? 0;
+
+        const trebleTransient =
+            transients?.treble ?? 0;    
+
 
         for (
             let i = 0;
@@ -178,24 +202,80 @@ export default class NebulaCore {
                     z * z
                 );
 
-            const pulse =
+            const normalizedRadius =
+                radius / 1.2;  
+                
+                
+            const bassInfluence =
+                Math.max(
+                    0,
+                    1 - normalizedRadius * 2
+                );
+
+            const midInfluence =
+                Math.max(
+                    0,
+                    1 -
+                    Math.abs(normalizedRadius - 0.5) * 2
+                );
+
+            const trebleInfluence =
+                Math.max(
+                    0,
+                    (normalizedRadius - 0.5) * 2
+                );
+                
+            const transientInfluence =
+                bassTransient * bassInfluence +
+                lowMidTransient * bassInfluence * 0.8 +
+                midTransient * midInfluence +
+                highMidTransient * trebleInfluence * 0.8 +
+                trebleTransient * trebleInfluence;    
+
+            const radialDeformation =
+                impact * 0.12;
+
+            const waveX =
                 Math.sin(
-                    elapsedTime * 3 +
-                    radius * 8
-                ) *
-                bass *
-                0.15;
+                    y * 4 +
+                    elapsedTime * 0.5
+                );
+
+            const waveY =
+                Math.sin(
+                    z * 4 +
+                    elapsedTime * 0.4
+                );
+
+            const waveZ =
+                Math.sin(
+                    x * 4 +
+                    elapsedTime * 0.6
+                );
+
+            const displacementX =
+                waveX *
+                transientInfluence *
+                0.10;
+
+            const displacementY =
+                waveY *
+                transientInfluence *
+                0.10;
+
+            const displacementZ =
+                waveZ *
+                transientInfluence *
+                0.10;
 
             positionAttribute.setXYZ(
                 i,
-                x + x * pulse,
-                y + y * pulse,
-                z + z * pulse
-            );
+                x + x * radialDeformation + displacementX,
+                y + y * radialDeformation + displacementY,
+                z + z * radialDeformation + displacementZ
+            );                  
         }
 
         positionAttribute.needsUpdate = true;
-
-        console.log("Core bass:", bass);
     }
 }

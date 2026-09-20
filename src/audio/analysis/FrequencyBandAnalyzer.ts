@@ -3,14 +3,15 @@ import { FrequencyBands } from "../models/FrequencyBands";
 
 export default class FrequencyBandAnalyzer {
 
+    //analyze data for bass/mids/treble
     analyze(data: FrequencyData): FrequencyBands {
 
         return {
-            bass: this.getBandAverage(data, 20, 250),
-            lowMid: this.getBandAverage(data, 250, 500),
-            mid: this.getBandAverage(data, 500, 2000),
-            highMid: this.getBandAverage(data, 2000, 4000),
-            treble: this.getBandAverage(data, 4000, 20000)
+            bass: this.getBandAverage(data, 20, 150),
+            lowMid: this.getBandAverage(data, 150, 400),
+            mid: this.getBandAverage(data, 400, 2000),
+            highMid: this.getBandAverage(data, 2000, 6000),
+            treble: this.getBandAverage(data, 6000, 20000)
         };
     }
 

@@ -9,11 +9,13 @@ export default class Renderer {
             antialias: true
         });
 
+        //set the size of the rendered scene
         this.renderer.setSize(
             window.innerWidth,
             window.innerHeight
         );
 
+        //attach the renderer to the DOM Element 
         document.body.appendChild(
             this.renderer.domElement
         );

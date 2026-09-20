@@ -1,9 +1,16 @@
 import { FrequencyBands } from "./models/FrequencyBands";
 
 export default class AudioNormalizer {
+    //set max volume
     private volumeMaximum = 0.0001;
 
-    private readonly maxValues: FrequencyBands = {
+
+    private readonly referenceRise = 0.2;
+    private readonly referenceFall = 0.001;
+
+
+
+    private readonly referenceLevels: FrequencyBands = {
         bass: 0.0001,
         lowMid: 0.0001,
         mid: 0.0001,
@@ -17,18 +24,26 @@ export default class AudioNormalizer {
         return volume / this.volumeMaximum;
     }
 
+    
+
     normalizeBands(bands: FrequencyBands): FrequencyBands {
-        this.updateMaximums(bands);
+        this.updateReferenceLevels(bands);
 
         return {
-            bass: bands.bass / this.maxValues.bass,
-            lowMid: bands.lowMid / this.maxValues.lowMid,
-            mid: bands.mid / this.maxValues.mid,
-            highMid: bands.highMid / this.maxValues.highMid,
-            treble: bands.treble / this.maxValues.treble
+            bass: this.clamp(bands.bass / this.referenceLevels.bass),
+            lowMid: this.clamp(bands.lowMid / this.referenceLevels.lowMid),
+            mid: this.clamp(bands.mid / this.referenceLevels.mid),
+            highMid: this.clamp(bands.highMid / this.referenceLevels.highMid),
+            treble: this.clamp(bands.treble / this.referenceLevels.treble)
         };
     }
 
+    //create a clamp for the audio volumes so they may never exceed 1 -> 0-1
+    private clamp(value: number): number {
+        return Math.max(0, Math.min(1, value));
+    }
+
+    //normalize values for ease of readability and usability
     normalizeSpectrum(magnitudes: Float32Array): Float32Array {
         let maximum = 0;
 
@@ -49,11 +64,30 @@ export default class AudioNormalizer {
         return normalized;
     }
 
-    private updateMaximums(bands: FrequencyBands): void {
-        this.maxValues.bass = Math.max(this.maxValues.bass, bands.bass);
-        this.maxValues.lowMid = Math.max(this.maxValues.lowMid, bands.lowMid);
-        this.maxValues.mid = Math.max(this.maxValues.mid, bands.mid);
-        this.maxValues.highMid = Math.max(this.maxValues.highMid, bands.highMid);
-        this.maxValues.treble = Math.max(this.maxValues.treble, bands.treble);
+    private updateReference(current: number, target: number): number {
+
+        if (target > current) {
+            return current + (target - current) * this.referenceRise;
+        }
+
+        return current + (target - current) * this.referenceFall;
+    }
+
+    private updateReferenceLevels(bands: FrequencyBands): void {
+
+        this.referenceLevels.bass =
+            this.updateReference(this.referenceLevels.bass, bands.bass);
+
+        this.referenceLevels.lowMid =
+            this.updateReference(this.referenceLevels.lowMid, bands.lowMid);
+
+        this.referenceLevels.mid =
+            this.updateReference(this.referenceLevels.mid, bands.mid);
+
+        this.referenceLevels.highMid =
+            this.updateReference(this.referenceLevels.highMid, bands.highMid);
+
+        this.referenceLevels.treble =
+            this.updateReference(this.referenceLevels.treble, bands.treble);
     }
 }

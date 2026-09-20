@@ -3,7 +3,7 @@ import { FrequencyData } from "../models/FrequencyData";
 
 export default class FFTAnalyzer {
 
-    private readonly fftSize = 512;
+    private readonly fftSize = 1024;
     private readonly sampleRate = 48000;
     private readonly fft: FFT;
 
@@ -15,7 +15,7 @@ export default class FFTAnalyzer {
 
         const input = new Array<number>(this.fftSize);
 
-        //Hann Window
+        //Declare a Hann Window for audio smoothing
         for (let i = 0; i < this.fftSize; i++) {
 
             const sample = samples[i] ?? 0;

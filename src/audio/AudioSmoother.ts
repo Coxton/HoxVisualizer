@@ -10,25 +10,40 @@ export default class AudioSmoother {
         treble: 0
     };
 
-    private readonly smoothing = 0.2;
 
+    private readonly attack = 0.35;
+    private readonly release = 0.08;
+
+    
+    //smooth audio samples by either multiplying the result of target - current with either attack or release  
     smooth(target: FrequencyBands): FrequencyBands {
 
-        this.current.bass +=
-            (target.bass - this.current.bass) * this.smoothing;
+        this.current.bass =
+            this.smoothValue(this.current.bass, target.bass);
 
-        this.current.lowMid +=
-            (target.lowMid - this.current.lowMid) * this.smoothing;
+        this.current.lowMid =
+            this.smoothValue(this.current.lowMid, target.lowMid);
 
-        this.current.mid +=
-            (target.mid - this.current.mid) * this.smoothing;
+        this.current.mid =
+            this.smoothValue(this.current.mid, target.mid);
 
-        this.current.highMid +=
-            (target.highMid - this.current.highMid) * this.smoothing;
+        this.current.highMid =
+            this.smoothValue(this.current.highMid, target.highMid);
 
-        this.current.treble +=
-            (target.treble - this.current.treble) * this.smoothing;
+        this.current.treble =
+            this.smoothValue(this.current.treble, target.treble);
 
         return { ...this.current };
+    }
+
+
+    private smoothValue(current: number, target: number): number {
+
+        const smoothing =
+            target > current
+                ? this.attack
+                : this.release;
+
+        return current + (target - current) * smoothing;
     }
 }

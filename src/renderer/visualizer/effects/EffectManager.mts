@@ -6,10 +6,12 @@ export default class EffectManager {
     private readonly effects: VisualizerEffect[] = [];
     private activeEffect: VisualizerEffect | null = null;
 
+    
     addEffect(effect: VisualizerEffect): void {
         this.effects.push(effect);
     }
 
+    //TODO:: Allow selection of active Effect: Nebula, Black hole and so on
     setActiveEffect(effect: VisualizerEffect): void {
         this.activeEffect = effect;
     }

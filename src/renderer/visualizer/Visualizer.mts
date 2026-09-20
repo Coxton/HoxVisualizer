@@ -7,15 +7,16 @@ import CameraManager from "./rendering/CameraManager.mjs";
 import Renderer from "./rendering/Renderer.mjs";
 
 class Visualizer {
+    //declare managers and renderer
     private readonly effectManager: EffectManager;
     private readonly sceneManager: SceneManager;
     private readonly cameraManager: CameraManager;
     private readonly renderer: Renderer;
     
-    //Declare Properties of Three js scene
+
     private elapsedTime = 0;
 
-    //Audio Feed
+    //Receive analyzed Audio
     private audio: AnalyzedAudio | null = null;
 
 
@@ -60,13 +61,11 @@ class Visualizer {
         this.render();
     }
 
- 
+    //setup scene to render
     private render(): void {
         this.timer.update();
 
         const deltaTime = this.timer.getDelta();
-        const bass =
-        this.audio?.frequencyBands.bass ?? 0;
 
         this.elapsedTime += deltaTime;
 
@@ -77,7 +76,7 @@ class Visualizer {
 
         this.sceneManager.nebula.update(
             this.elapsedTime,
-            bass
+            this.audio
         );
 
         this.sceneManager.particleField.update(
@@ -98,11 +97,13 @@ class Visualizer {
         this.audio = audio;
     }
 
+    //Listen for Events
     private setupEventListeners(): void {
-    window.addEventListener("resize", () => {
-        this.cameraManager.resize();
-        this.renderer.resize();
-    });
+        //Resize Visualizer Scene upon resizing the Electron Window
+        window.addEventListener("resize", () => {
+            this.cameraManager.resize();
+            this.renderer.resize();
+        });
 }
 
 }

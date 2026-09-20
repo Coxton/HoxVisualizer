@@ -5,6 +5,8 @@ import AudioManager from "../audio/AudioManager";
 import AudioAnalyzer from "../audio/analysis/AudioAnalyzer";
 import AudioIPC from "./ipc/AudioIPC";
 
+
+//create Electron Window and load preload file
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
@@ -20,6 +22,8 @@ const createWindow = () => {
     return win;
 };
 
+
+//start the main Process
 app.whenReady().then(() => {
     const win = createWindow();
 
@@ -27,14 +31,15 @@ app.whenReady().then(() => {
     const audioAnalyzer = new AudioAnalyzer();
     const audioIPC = new AudioIPC(win);
 
+    //start processes once the windows has finished loading
     win.webContents.once("did-finish-load", () => {
-        console.log("Renderer finished loading");
 
+        //start the SystemAudio Pipeline
         audioManager.startSystemAudio((frame) => {
-            //console.log("Main received audio frame");
 
             const analyzed = audioAnalyzer.analyze(frame);
-
+            
+            //sending analyzed Audio to the renderer to process in the Frontend
             audioIPC.sendAudioData(analyzed);
         });
     });

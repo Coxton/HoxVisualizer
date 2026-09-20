@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import NebulaGas from "./NebulaGas.mjs";
 import NebulaCore from "./NebulaCore.mjs";
+import type { AnalyzedAudio } from "../../../../audio/models/AnalyzedAudio.js";
 
 export default class Nebula {
     readonly points: THREE.Points;
@@ -93,9 +94,9 @@ export default class Nebula {
         this.core = new NebulaCore(scene);
     }
 
-    update(
+        update(
             elapsedTime: number,
-            bass: number
+            audio: AnalyzedAudio | null
         ): void {
         this.points.rotation.y =
             elapsedTime * 0.02;
@@ -108,7 +109,7 @@ export default class Nebula {
         );
         this.core.update(
             elapsedTime,
-            bass
-        );    
+            audio
+        );
     }
 }

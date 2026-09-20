@@ -14,6 +14,8 @@ interface NativeAudioSessions {
 const nativeAudio =
     require("../../../native/audio-sessions/build/Release/audio_sessions.node") as NativeAudioSessions;
 
+
+//call upon Windows Audio Output Source Array    
 export default class WindowsAudioSourceProvider
     implements AudioSourceProvider
 {

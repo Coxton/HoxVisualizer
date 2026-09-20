@@ -1,13 +1,13 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-console.log("Preload loaded");
 
+//expose audio to the Frontend
 contextBridge.exposeInMainWorld("audio", {
+    //listen for analyzed Audio to be sent
     onData(callback: (data: unknown) => void): void {
-        //console.log("Renderer registered audio listener");
 
         ipcRenderer.on("audio-data", (_event, data) => {
-            //console.log("Preload received actual audio data");
+
             callback(data);
         });
     }
