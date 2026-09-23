@@ -13,9 +13,9 @@
     "author": "Hoxton",
     "main": "dist/main/main.js",
     "scripts": {
-        "build": "tsc",
-        "start": "npm run build && electron .",
-        "build:renderer": "vite build"
+    "build": "tsc",
+    "build:renderer": "vite build",
+    "start": "npm run build && npm run build:renderer && electron ."
     },
     "devDependencies": {
         "@types/node": "^26.5.1",

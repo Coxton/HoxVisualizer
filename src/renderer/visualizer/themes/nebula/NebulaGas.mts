@@ -1,172 +1,191 @@
 import * as THREE from "three";
+import type { AnalyzedAudio } from "../../../../audio/models/AnalyzedAudio.js";
+
+import vertexShader
+    from "./shaders/nebulaGas.vert.glsl?raw";
+
+import fragmentShader
+    from "./shaders/nebulaGas.frag.glsl?raw";
 
 export default class NebulaGas {
-    readonly points: THREE.Points;
 
-    private readonly originalPositions: Float32Array;
-    private readonly motionOffsets: Float32Array;
+    readonly mesh: THREE.Mesh;
+
+    private readonly material:
+        THREE.ShaderMaterial;
+
+    private visualMid = 0;
+    private vocalResponse = 0;
 
     constructor(scene: THREE.Scene) {
-        const particleCount = 6000;
-        const armCount = 4;
-
-        const positions = new Float32Array(
-            particleCount * 3
-        );
-
-        this.motionOffsets = new Float32Array(
-            particleCount
-        );
-
-        for (let i = 0; i < particleCount; i++) {
-            const index = i * 3;
-
-            const arm =
-                Math.floor(
-                    Math.random() * armCount
-                );
-
-            const radius =
-                Math.pow(
-                    Math.random(),
-                    0.7
-                ) * 5;
-
-            const armAngle =
-                (arm / armCount) *
-                Math.PI * 2;
-
-            const spiralAngle =
-                armAngle +
-                radius * 0.7;
-
-            const spread =
-                (Math.random() - 0.5) *
-                0.8;
-
-            const angle =
-                spiralAngle + spread;
-
-            const x =
-                Math.cos(angle) *
-                radius *
-                1.5;
-
-            const y =
-                (Math.random() - 0.5) *
-                1.2;
-
-            const z =
-                Math.sin(angle) *
-                radius *
-                0.8;
-
-            positions[index] = x;
-            positions[index + 1] = y;
-            positions[index + 2] = z;
-
-            this.motionOffsets[i] =
-                Math.random() * Math.PI * 2;
-        }
-
-        this.originalPositions =
-            positions.slice();
 
         const geometry =
-            new THREE.BufferGeometry();
+            new THREE.BoxGeometry(
+                16,
+                7,
+                10
+            );
 
-        geometry.setAttribute(
-            "position",
-            new THREE.BufferAttribute(
-                positions,
-                3
-            )
-        );
+        this.material =
+            new THREE.ShaderMaterial({
 
-        const material =
-            new THREE.PointsMaterial({
-                color: 0xffffff,
-                size: 0.018,
-                transparent: true,
-                opacity: 0.35
-            });
+            uniforms: {
+                uTime: {
+                    value: 0
+                },
+                uBass: {
+                    value: 0
+                },
+                uLowMid: {
+                    value: 0
+                },
+                uMid: {
+                    value: 0
+                },
+                uCameraPosition: {
+                    value: new THREE.Vector3()
+                },
+                uLightPosition: {
+                    value: new THREE.Vector3(0, 0, 0)
+                },
+                uCorePosition: {
+                    value: new THREE.Vector3(0, 0, 0)
+                },
+                uCoreIntensity: {
+                    value: 1.0
+                },
+                uOuterColor: {
+                    value: new THREE.Color(
+                        0.75,
+                        0.025,
+                        0.005
+                    )
+                },
+                uMidColor: {
+                    value: new THREE.Color(
+                        1.0,
+                        0.28,
+                        0.015
+                    )
+                },
+                uInnerColor: {
+                    value: new THREE.Color(
+                        0.015,
+                        0.22,
+                        1.0
+                    )
+                },
+                uVocalIntensity: {
+                    value: 0
+                },
+            },
 
-        this.points = new THREE.Points(
-            geometry,
-            material
-        );
+            vertexShader,
 
-        scene.add(this.points);
+            fragmentShader,
+
+            transparent: true,
+
+            depthWrite: false,
+
+            side: THREE.BackSide
+
+        });
+
+        this.mesh =
+            new THREE.Mesh(
+                geometry,
+                this.material
+            );
+
+        scene.add(this.mesh);
     }
 
-    update(elapsedTime: number): void {
-        this.points.rotation.y =
-            elapsedTime * 0.015;
+    update(
+        elapsedTime: number,
+        audio: AnalyzedAudio | null,
+        camera: THREE.Camera,
+        corePosition: THREE.Vector3
+    ): void {
 
-        const positionAttribute =
-            this.points.geometry.getAttribute(
-                "position"
-            ) as THREE.BufferAttribute;
+        this.material
+            .uniforms
+            .uTime
+            .value = elapsedTime;
 
-        for (
-            let i = 0;
-            i < positionAttribute.count;
-            i++
-        ) {
-            const index = i * 3;
+        this.material
+            .uniforms
+            .uBass
+            .value =
+            audio?.frequencyBands.bass ?? 0;
 
-            const x =
-                this.originalPositions[index];
+        this.material
+            .uniforms
+            .uLowMid
+            .value =
+            audio?.frequencyBands.lowMid ?? 0;
 
-            const y =
-                this.originalPositions[index + 1];
+        const targetMid =
+            audio?.frequencyBands.mid ?? 0;
 
-            const z =
-                this.originalPositions[index + 2];
+        const midResponse =
+            targetMid > this.visualMid
+                ? 0.25
+                : 0.04;
 
-            const offset =
-                this.motionOffsets[i];
+        this.visualMid +=
+            (targetMid - this.visualMid) *
+            midResponse;
 
-            const horizontalWave =
-                Math.sin(
-                    elapsedTime * 0.7 +
-                    offset +
-                    y * 2
+        this.material
+            .uniforms
+            .uMid
+            .value =
+            this.visualMid;
+
+        const targetVocal =
+                (
+                    (audio?.frequencyBands.mid ?? 0) * 0.6 +
+                    (audio?.frequencyBands.highMid ?? 0) * 0.4
                 );
 
-            const verticalWave =
-                Math.cos(
-                    elapsedTime * 0.5 +
-                    offset +
-                    x * 1.5
-                );
+            const vocalResponse =
+                targetVocal > this.vocalResponse
+                    ? 0.18
+                    : 0.05;
 
-            const radialWave =
-                Math.sin(
-                    elapsedTime * 0.4 +
-                    offset +
-                    Math.sqrt(x * x + z * z) * 2
-                );
+            this.vocalResponse +=
+                (targetVocal - this.vocalResponse) *
+                vocalResponse;
 
-            const displacement =
-                0.035;
+            this.material
+                .uniforms
+                .uVocalIntensity
+                .value =
+                this.vocalResponse;
 
-            positionAttribute.setXYZ(
-                i,
-                x +
-                    horizontalWave *
-                    displacement,
 
-                y +
-                    verticalWave *
-                    displacement,
 
-                z +
-                    radialWave *
-                    displacement
+        const localCameraPosition =
+            this.mesh.worldToLocal(
+                camera.position.clone()
             );
-        }
 
-        positionAttribute.needsUpdate = true;
+        this.material
+            .uniforms
+            .uCameraPosition
+            .value
+            .copy(localCameraPosition);
+
+        const localCorePosition =
+            this.mesh.worldToLocal(
+                corePosition.clone()
+            );
+
+        this.material
+            .uniforms
+            .uCorePosition
+            .value
+            .copy(localCorePosition);
     }
 }

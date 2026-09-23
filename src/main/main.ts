@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron/main";
+import { app, BrowserWindow, Menu } from "electron/main";
 import path from "node:path";
 
 import AudioManager from "../audio/AudioManager";
@@ -6,7 +6,7 @@ import AudioAnalyzer from "../audio/analysis/AudioAnalyzer";
 import AudioIPC from "./ipc/AudioIPC";
 
 
-//create Electron Window and load preload file
+// create Electron Window and load preload file
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
@@ -23,23 +23,27 @@ const createWindow = () => {
 };
 
 
-//start the main Process
+// start the main Process
 app.whenReady().then(() => {
+
+    // Remove the Electron application menu
+    Menu.setApplicationMenu(null);
+
     const win = createWindow();
 
     const audioManager = new AudioManager();
     const audioAnalyzer = new AudioAnalyzer();
     const audioIPC = new AudioIPC(win);
 
-    //start processes once the windows has finished loading
+    // start processes once the window has finished loading
     win.webContents.once("did-finish-load", () => {
 
-        //start the SystemAudio Pipeline
+        // start the SystemAudio Pipeline
         audioManager.startSystemAudio((frame) => {
 
             const analyzed = audioAnalyzer.analyze(frame);
-            
-            //sending analyzed Audio to the renderer to process in the Frontend
+
+            // sending analyzed Audio to the renderer
             audioIPC.sendAudioData(analyzed);
         });
     });

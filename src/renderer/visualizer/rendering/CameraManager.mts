@@ -9,7 +9,7 @@ export default class CameraManager {
         //setup scene camera
         //TODO:: Cinematic Camera Motion -> Toggleable later on
         this.camera = new THREE.PerspectiveCamera(
-            75,
+            60,
             window.innerWidth / window.innerHeight,
             0.1,
             1000

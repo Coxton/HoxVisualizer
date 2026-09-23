@@ -1,12 +1,12 @@
 import * as THREE from "three";
-import ParticleField from "../environment/ParticleField.mjs";
+import StarField from "../environment/StarField.mjs";
 import Nebula from "../themes/nebula/Nebula.mjs";
 
 export default class SceneManager {
 
 
     readonly scene: THREE.Scene;
-    readonly particleField: ParticleField;
+    readonly starField: StarField;
     readonly nebula: Nebula;
 
     constructor() {
@@ -14,7 +14,7 @@ export default class SceneManager {
         this.scene = new THREE.Scene();
 
         //include starry background
-        this.particleField = new ParticleField(
+        this.starField = new StarField(
             this.scene
         );
 

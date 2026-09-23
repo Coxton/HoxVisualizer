@@ -76,12 +76,10 @@ class Visualizer {
 
         this.sceneManager.nebula.update(
             this.elapsedTime,
-            this.audio
+            this.audio,
+            this.cameraManager.camera
         );
 
-        this.sceneManager.particleField.update(
-            this.elapsedTime
-        );
 
 
 
