@@ -3,33 +3,38 @@ import { AudioFrame } from "../models/AudioFrame";
 
 export default class AudioCapture {
 
-    private capture = new loopback.LoopbackCapture();
+    private capture =
+        new loopback.LoopbackCapture();
 
+    startSystemAudio(
+        onAudioData: (frame: AudioFrame) => void
+    ): void {
 
-    startSystemAudio(onAudioData: (frame: AudioFrame) => void): void {
-        this.capture.startSystemAudio((data: Buffer) => {
+        this.capture.startSystemAudio(
+            (data: Buffer) => {
 
+                const frame: AudioFrame = {
+                    data,
+                    sampleRate: 48000,
+                    channels: 2,
+                    timestamp: Date.now()
+                };
 
-            const frame: AudioFrame = {
-                data,
-                sampleRate: 48000,
-                channels: 2,
-                timestamp: Date.now()
-            };
-
-            onAudioData(frame);
-
-        });
+                onAudioData(frame);
+            }
+        );
     }
 
-        startProcessAudio(
+    startProcessAudio(
         processId: number,
         onAudioData: (frame: AudioFrame) => void
     ): void {
+
         this.capture.start(
             processId,
-            false,
+            true,
             (data: Buffer) => {
+
                 const frame: AudioFrame = {
                     data,
                     sampleRate: 48000,
@@ -45,5 +50,4 @@ export default class AudioCapture {
     stop(): void {
         this.capture.stop();
     }
-
 }

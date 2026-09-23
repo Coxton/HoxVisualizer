@@ -21,8 +21,10 @@ export default class Nebula {
         audio: AnalyzedAudio | null,
         camera: THREE.Camera
     ): void {
-
+        
         this.core.update(
+            elapsedTime,
+            audio,
             camera
         );
 
