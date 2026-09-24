@@ -29,68 +29,84 @@ export default class NebulaGas {
         this.material =
             new THREE.ShaderMaterial({
 
-            uniforms: {
-                uTime: {
-                    value: 0
-                },
-                uBass: {
-                    value: 0
-                },
-                uLowMid: {
-                    value: 0
-                },
-                uMid: {
-                    value: 0
-                },
-                uCameraPosition: {
-                    value: new THREE.Vector3()
-                },
-                uLightPosition: {
-                    value: new THREE.Vector3(0, 0, 0)
-                },
-                uCorePosition: {
-                    value: new THREE.Vector3(0, 0, 0)
-                },
-                uCoreIntensity: {
-                    value: 1.0
-                },
-                uOuterColor: {
-                    value: new THREE.Color(
-                        0.75,
-                        0.025,
-                        0.005
-                    )
-                },
-                uMidColor: {
-                    value: new THREE.Color(
-                        1.0,
-                        0.28,
-                        0.015
-                    )
-                },
-                uInnerColor: {
-                    value: new THREE.Color(
-                        0.015,
-                        0.22,
-                        1.0
-                    )
-                },
-                uVocalIntensity: {
-                    value: 0
-                },
-            },
+                uniforms: {
+                    uTime: {
+                        value: 0
+                    },
 
-            vertexShader,
+                    uBass: {
+                        value: 0
+                    },
 
-            fragmentShader,
+                    uLowMid: {
+                        value: 0
+                    },
 
-            transparent: true,
+                    uMid: {
+                        value: 0
+                    },
 
-            depthWrite: false,
+                    uCameraPosition: {
+                        value:
+                            new THREE.Vector3()
+                    },
 
-            side: THREE.BackSide
+                    uLightPosition: {
+                        value:
+                            new THREE.Vector3(0, 0, 0)
+                    },
 
-        });
+                    uCorePosition: {
+                        value:
+                            new THREE.Vector3(0, 0, 0)
+                    },
+
+                    uCoreIntensity: {
+                        value: 1.0
+                    },
+
+                    uOuterColor: {
+                        value:
+                            new THREE.Color(
+                                0.75,
+                                0.025,
+                                0.005
+                            )
+                    },
+
+                    uMidColor: {
+                        value:
+                            new THREE.Color(
+                                1.0,
+                                0.28,
+                                0.015
+                            )
+                    },
+
+                    uInnerColor: {
+                        value:
+                            new THREE.Color(
+                                0.015,
+                                0.22,
+                                1.0
+                            )
+                    },
+
+                    uVocalIntensity: {
+                        value: 0
+                    }
+                },
+
+                vertexShader,
+
+                fragmentShader,
+
+                transparent: true,
+
+                depthWrite: false,
+
+                side: THREE.BackSide
+            });
 
         this.mesh =
             new THREE.Mesh(
@@ -111,7 +127,8 @@ export default class NebulaGas {
         this.material
             .uniforms
             .uTime
-            .value = elapsedTime;
+            .value =
+            elapsedTime;
 
         this.material
             .uniforms
@@ -144,27 +161,25 @@ export default class NebulaGas {
             this.visualMid;
 
         const targetVocal =
-                (
-                    (audio?.frequencyBands.mid ?? 0) * 0.6 +
-                    (audio?.frequencyBands.highMid ?? 0) * 0.4
-                );
+            (
+                (audio?.frequencyBands.mid ?? 0) * 0.6 +
+                (audio?.frequencyBands.highMid ?? 0) * 0.4
+            );
 
-            const vocalResponse =
-                targetVocal > this.vocalResponse
-                    ? 0.18
-                    : 0.05;
+        const vocalResponse =
+            targetVocal > this.vocalResponse
+                ? 0.18
+                : 0.05;
 
-            this.vocalResponse +=
-                (targetVocal - this.vocalResponse) *
-                vocalResponse;
+        this.vocalResponse +=
+            (targetVocal - this.vocalResponse) *
+            vocalResponse;
 
-            this.material
-                .uniforms
-                .uVocalIntensity
-                .value =
-                this.vocalResponse;
-
-
+        this.material
+            .uniforms
+            .uVocalIntensity
+            .value =
+            this.vocalResponse;
 
         const localCameraPosition =
             this.mesh.worldToLocal(
@@ -175,7 +190,9 @@ export default class NebulaGas {
             .uniforms
             .uCameraPosition
             .value
-            .copy(localCameraPosition);
+            .copy(
+                localCameraPosition
+            );
 
         const localCorePosition =
             this.mesh.worldToLocal(
@@ -186,6 +203,8 @@ export default class NebulaGas {
             .uniforms
             .uCorePosition
             .value
-            .copy(localCorePosition);
+            .copy(
+                localCorePosition
+            );
     }
 }

@@ -62,12 +62,15 @@ class Visualizer {
     }
 
     //setup scene to render
-    private render(): void {
+        private render(): void {
+
         this.timer.update();
 
-        const deltaTime = this.timer.getDelta();
+        const deltaTime =
+            this.timer.getDelta();
 
-        this.elapsedTime += deltaTime;
+        this.elapsedTime +=
+            deltaTime;
 
         this.effectManager.update(
             this.audio,
@@ -80,15 +83,25 @@ class Visualizer {
             this.cameraManager.camera
         );
 
+        
+        // Render gas at half resolution
+        this.renderer.renderGas(
+            this.sceneManager.gasScene,
+            this.cameraManager.camera
+        );
 
-
-
-        this.renderer.render(
+        // Render all else in full
+        this.renderer.renderMain(
             this.sceneManager.scene,
             this.cameraManager.camera
         );
 
-        requestAnimationFrame(() => this.render());
+        //put gas over main scene
+        this.renderer.renderGasComposite();
+
+        requestAnimationFrame(
+            () => this.render()
+        );
     }
 
     update(audio: AnalyzedAudio): void {

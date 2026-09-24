@@ -27,7 +27,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
 
     // Remove the Electron application menu
-    Menu.setApplicationMenu(null);
+    //Menu.setApplicationMenu(null);
 
     const win = createWindow();
 

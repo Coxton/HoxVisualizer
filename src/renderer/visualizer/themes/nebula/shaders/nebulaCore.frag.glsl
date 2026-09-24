@@ -157,22 +157,16 @@ float nebulaNoise(vec3 p)
             p * 0.8
         );
 
-    float small =
-        noise(
-            p * 1.6
-        );
-
     float fine =
         noise(
-            p * 3.2
+            p * 2.0
         );
 
 
     return
-        large * 0.45 +
-        medium * 0.30 +
-        small * 0.18 +
-        fine * 0.07;
+        large * 0.50 +
+        medium * 0.32 +
+        fine * 0.18;
 }
 
 
@@ -200,10 +194,10 @@ void main()
 
 
     float stepSize =
-        0.08;
+        0.12;
 
 
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 40; i++)
     {
         float distance =
             float(i) *

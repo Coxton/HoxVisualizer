@@ -1,4 +1,3 @@
-
 uniform vec3 uCameraPosition;
 uniform vec3 uLightPosition;
 uniform vec3 uCorePosition;
@@ -250,10 +249,10 @@ void main()
 
 
     float stepSize =
-        0.12;
+        0.20;
 
 
-    for (int i = 0; i < 48; i++)
+    for (int i = 0; i < 24; i++)
     {
         float distance =
             float(i) *
@@ -342,7 +341,6 @@ void main()
             );
 
 
-
         sampleDensity *=
             0.65 +
             mediumCloud * 0.6;
@@ -369,9 +367,8 @@ void main()
 
 
         /*
-         * Vocal intensity currently acts
-         * as an approximation using the
-         * mid/high-mid frequency response.
+         * Vocal intensity illuminates
+         * the gas around the core.
          */
 
         float vocalLight =
@@ -430,27 +427,18 @@ void main()
 
 
         /*
-         * Core emission.
-         */
-
-        emissionAmount +=
-            sampleDensity *
-            vocalLight *
-            0.012;
-
-
-        /*
-         * Vocal emission
+         * Combine the two previous emission
+         * accumulations into one operation.
          *
-         * This is accumulated inside the
-         * raymarch because vocalLight is
-         * calculated per sample.
+         * 0.012 + 0.020 = 0.032
+         *
+         * This preserves the exact same result.
          */
 
         emissionAmount +=
             sampleDensity *
             vocalLight *
-            0.02;
+            0.032;
 
 
         colorAmount +=
@@ -534,4 +522,3 @@ void main()
             density
         );
 }
-
