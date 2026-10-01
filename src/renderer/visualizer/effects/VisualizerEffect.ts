@@ -1,8 +1,8 @@
-import type { AnalyzedAudio } from "../../../audio/models/AnalyzedAudio.js";
+import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
 
 export interface VisualizerEffect {
     update(
-        audio: AnalyzedAudio | null,
+        audio: VisualAudio | null,
         elapsedTime: number
     ): void;
 }

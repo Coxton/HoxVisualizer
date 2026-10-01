@@ -1,11 +1,11 @@
 import * as THREE from "three";
-import type { AnalyzedAudio } from "../../../../audio/models/AnalyzedAudio.js";
 
 import vertexShader
     from "./shaders/nebulaGas.vert.glsl?raw";
 
 import fragmentShader
     from "./shaders/nebulaGas.frag.glsl?raw";
+import type { VisualAudio } from "../../../../audio/visual/models/VisualAudio.mjs";
 
 export default class NebulaGas {
 
@@ -119,7 +119,7 @@ export default class NebulaGas {
 
     update(
         elapsedTime: number,
-        audio: AnalyzedAudio | null,
+        audio: VisualAudio | null,
         camera: THREE.Camera,
         corePosition: THREE.Vector3
     ): void {
@@ -134,16 +134,16 @@ export default class NebulaGas {
             .uniforms
             .uBass
             .value =
-            audio?.frequencyBands.bass ?? 0;
+            audio?.bass ?? 0;
 
         this.material
             .uniforms
             .uLowMid
             .value =
-            audio?.frequencyBands.lowMid ?? 0;
+            audio?.lowMid ?? 0;
 
         const targetMid =
-            audio?.frequencyBands.mid ?? 0;
+            audio?.mid ?? 0;
 
         const midResponse =
             targetMid > this.visualMid
@@ -162,8 +162,8 @@ export default class NebulaGas {
 
         const targetVocal =
             (
-                (audio?.frequencyBands.mid ?? 0) * 0.6 +
-                (audio?.frequencyBands.highMid ?? 0) * 0.4
+                (audio?.mid ?? 0) * 0.6 +
+                (audio?.highMid ?? 0) * 0.4
             );
 
         const vocalResponse =

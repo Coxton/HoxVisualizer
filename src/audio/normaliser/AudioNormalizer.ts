@@ -1,14 +1,10 @@
-import { FrequencyBands } from "./models/FrequencyBands";
+import { FrequencyBands } from "../models/FrequencyBands";
 
 export default class AudioNormalizer {
-    //set max volume
     private volumeMaximum = 0.0001;
 
-
     private readonly referenceRise = 0.2;
-    private readonly referenceFall = 0.001;
-
-
+    private readonly referenceFall = 0.02;
 
     private readonly referenceLevels: FrequencyBands = {
         bass: 0.0001,
@@ -20,11 +16,8 @@ export default class AudioNormalizer {
 
     normalizeVolume(volume: number): number {
         this.volumeMaximum = Math.max(this.volumeMaximum, volume);
-
         return volume / this.volumeMaximum;
     }
-
-    
 
     normalizeBands(bands: FrequencyBands): FrequencyBands {
         this.updateReferenceLevels(bands);
@@ -38,12 +31,6 @@ export default class AudioNormalizer {
         };
     }
 
-    //create a clamp for the audio volumes so they may never exceed 1 -> 0-1
-    private clamp(value: number): number {
-        return Math.max(0, Math.min(1, value));
-    }
-
-    //normalize values for ease of readability and usability
     normalizeSpectrum(magnitudes: Float32Array): Float32Array {
         let maximum = 0;
 
@@ -64,8 +51,27 @@ export default class AudioNormalizer {
         return normalized;
     }
 
-    private updateReference(current: number, target: number): number {
+    reset(): void {
+        this.volumeMaximum = 0.0001;
 
+        this.referenceLevels.bass = 0.0001;
+        this.referenceLevels.lowMid = 0.0001;
+        this.referenceLevels.mid = 0.0001;
+        this.referenceLevels.highMid = 0.0001;
+        this.referenceLevels.treble = 0.0001;
+    }
+
+    getDebugState() {
+        return {
+            volumeMaximum: this.volumeMaximum,
+            referenceLevels: { ...this.referenceLevels }
+        };
+    }
+
+    private updateReference(
+        current: number,
+        target: number
+    ): number {
         if (target > current) {
             return current + (target - current) * this.referenceRise;
         }
@@ -73,21 +79,41 @@ export default class AudioNormalizer {
         return current + (target - current) * this.referenceFall;
     }
 
-    private updateReferenceLevels(bands: FrequencyBands): void {
-
+    private updateReferenceLevels(
+        bands: FrequencyBands
+    ): void {
         this.referenceLevels.bass =
-            this.updateReference(this.referenceLevels.bass, bands.bass);
+            this.updateReference(
+                this.referenceLevels.bass,
+                bands.bass
+            );
 
         this.referenceLevels.lowMid =
-            this.updateReference(this.referenceLevels.lowMid, bands.lowMid);
+            this.updateReference(
+                this.referenceLevels.lowMid,
+                bands.lowMid
+            );
 
         this.referenceLevels.mid =
-            this.updateReference(this.referenceLevels.mid, bands.mid);
+            this.updateReference(
+                this.referenceLevels.mid,
+                bands.mid
+            );
 
         this.referenceLevels.highMid =
-            this.updateReference(this.referenceLevels.highMid, bands.highMid);
+            this.updateReference(
+                this.referenceLevels.highMid,
+                bands.highMid
+            );
 
         this.referenceLevels.treble =
-            this.updateReference(this.referenceLevels.treble, bands.treble);
+            this.updateReference(
+                this.referenceLevels.treble,
+                bands.treble
+            );
+    }
+
+    private clamp(value: number): number {
+        return Math.max(0, Math.min(1, value));
     }
 }

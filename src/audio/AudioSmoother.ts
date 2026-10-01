@@ -36,6 +36,17 @@ export default class AudioSmoother {
         return { ...this.current };
     }
 
+    
+    reset(): void {
+        this.current = {
+            bass: 0,
+            lowMid: 0,
+            mid: 0,
+            highMid: 0,
+            treble: 0
+        };
+    }
+
 
     private smoothValue(current: number, target: number): number {
 
@@ -46,4 +57,5 @@ export default class AudioSmoother {
 
         return current + (target - current) * smoothing;
     }
+
 }

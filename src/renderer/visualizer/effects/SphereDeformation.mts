@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import type { AnalyzedAudio } from "../../../audio/models/AnalyzedAudio.js";
 import type { VisualizerEffect } from "./VisualizerEffect.js";
+import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
 
 
 export default class SphereDeformation implements VisualizerEffect {
@@ -20,13 +20,13 @@ export default class SphereDeformation implements VisualizerEffect {
     }
 
     update(
-        audio: AnalyzedAudio | null,
+        audio: VisualAudio | null,
         elapsedTime: number
     ): void {
 
-    const bass = audio?.frequencyBands.bass ?? 0;
+    const bass = audio?.bass ?? 0;
 
-    const spectrum = audio?.normalizedSpectrum;
+    //const spectrum = audio?.normalizedSpectrum;
 
     for (let i = 0; i < this.position.count; i++) {
 
@@ -56,9 +56,9 @@ export default class SphereDeformation implements VisualizerEffect {
 
         let frequency = 0;
 
-        if (spectrum) {
+/*         if (spectrum) {
             frequency = spectrum[0];
-        }
+        } */
 
         const spectrumStrength = frequency * frequency;
 

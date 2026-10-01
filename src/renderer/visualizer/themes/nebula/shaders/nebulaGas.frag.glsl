@@ -161,8 +161,12 @@ vec3 flowPosition(
 
 
     float largeFlow =
-        time *
-        (0.06 + uLowMid * 0.015);
+        time * 0.06;
+
+    float largeAmplitude =
+        0.35 +
+        uLowMid * 0.30 +
+        uBass * 0.22;
 
 
     flowedPosition.x +=
@@ -170,7 +174,7 @@ vec3 flowPosition(
             position.z * 0.45 +
             largeFlow
         ) *
-        0.35;
+        largeAmplitude;
 
 
     flowedPosition.y +=
@@ -178,7 +182,7 @@ vec3 flowPosition(
             position.x * 0.35 +
             largeFlow * 0.8
         ) *
-        0.20;
+        (0.20 + uLowMid * 0.18);
 
 
     flowedPosition.z +=
@@ -186,12 +190,15 @@ vec3 flowPosition(
             position.y * 0.40 +
             largeFlow * 0.9
         ) *
-        0.30;
+        (0.30 + uLowMid * 0.22);
 
 
     float turbulence =
-        time *
-        (0.15 + uMid * 0.025);
+        time * 0.15;
+
+    float turbulenceAmplitude =
+        0.12 +
+        uMid * 0.26;
 
 
     flowedPosition.x +=
@@ -199,7 +206,7 @@ vec3 flowPosition(
             position.y * 1.3 +
             turbulence
         ) *
-        0.12;
+        turbulenceAmplitude;
 
 
     flowedPosition.y +=
@@ -207,7 +214,7 @@ vec3 flowPosition(
             position.z * 1.1 +
             turbulence * 0.8
         ) *
-        0.10;
+        (0.10 + uMid * 0.20);
 
 
     flowedPosition.z +=
@@ -215,7 +222,7 @@ vec3 flowPosition(
             position.x * 1.5 +
             turbulence * 1.1
         ) *
-        0.12;
+        (0.12 + uMid * 0.22);
 
 
     return flowedPosition;
@@ -425,15 +432,6 @@ void main()
             audioDensity *
             0.005;
 
-
-        /*
-         * Combine the two previous emission
-         * accumulations into one operation.
-         *
-         * 0.012 + 0.020 = 0.032
-         *
-         * This preserves the exact same result.
-         */
 
         emissionAmount +=
             sampleDensity *

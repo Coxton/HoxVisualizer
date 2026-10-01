@@ -1,11 +1,26 @@
 import * as THREE from "three";
-import starVertexShader from "./shaders/star.vert.glsl?raw";
 
-import starFragmentShader from "./shaders/star.frag.glsl?raw";
+import StarLayer from "./StarLayer.mjs";
+import Sun from "./Sun.mjs";
+import ShootingStar from "./ShootingStar.mjs";
+
 
 export default class StarField {
 
     readonly points: THREE.Group;
+
+    private readonly starLayers:
+        StarLayer[] = [];
+
+    private readonly sun:
+        Sun;
+
+    private readonly shootingStars:
+        ShootingStar[] = [];
+
+    private nextShootingStarTime =
+        5;
+
 
     constructor(scene: THREE.Scene) {
 
@@ -14,19 +29,58 @@ export default class StarField {
 
         scene.add(this.points);
 
-        this.createStarLayer(
+
+        this.createStarLayers();
+
+
+        this.sun =
+            new Sun();
+
+        this.points.add(
+            this.sun.sprite
+        );
+
+
+        this.createShootingStars();
+    }
+
+
+    update(
+        time: number,
+        deltaTime: number
+    ): void {
+
+        for (
+            const layer
+            of this.starLayers
+        ) {
+
+            layer.update(time);
+        }
+
+
+        this.updateShootingStars(
+            time,
+            deltaTime
+        );
+    }
+
+
+    private createStarLayers(): void {
+
+        this.addStarLayer(
             2200,
             0.12,
             0.45
         );
 
-        this.createStarLayer(
+        this.addStarLayer(
             450,
             0.18,
             0.65
         );
 
-        this.createStarLayer(
+        this.addStarLayer(
             60,
             0.25,
             0.9
@@ -34,115 +88,102 @@ export default class StarField {
     }
 
 
-    private createStarLayer(
-    particleCount: number,
-    size: number,
-    opacity: number
-): void {
+    private addStarLayer(
+        particleCount: number,
+        size: number,
+        opacity: number
+    ): void {
 
-    const positions =
-        new Float32Array(
-            particleCount * 3
+        const layer =
+            new StarLayer(
+                particleCount,
+                size,
+                opacity
+            );
+
+        this.starLayers.push(
+            layer
         );
 
-    const sizes =
-        new Float32Array(
-            particleCount
+        this.points.add(
+            layer.points
         );
+    }
 
-    const brightness =
-        new Float32Array(
-            particleCount
-        );
+
+    private createShootingStars(): void {
+
+        const count = 3;
+
 
         for (
             let i = 0;
-            i < particleCount;
+            i < count;
             i++
         ) {
 
-            const index = i * 3;
+            const shootingStar =
+                new ShootingStar();
 
-            positions[index] =
-                (Math.random() - 0.5) * 100;
-
-            positions[index + 1] =
-                (Math.random() - 0.5) * 100;
-
-            positions[index + 2] =
-                (Math.random() - 0.5) * 100;
-
-            sizes[i] =
-                size *
-                (
-                    0.75 +
-                    Math.random() * 0.5
-                );
-
-            brightness[i] =
-                opacity *
-                (
-                    0.75 +
-                    Math.random() * 0.25
-                );
-        }
-
-        const geometry =
-            new THREE.BufferGeometry();
-
-        geometry.setAttribute(
-            "position",
-            new THREE.BufferAttribute(
-                positions,
-                3
-            )
-        );
-
-        geometry.setAttribute(
-            "aSize",
-            new THREE.BufferAttribute(
-                sizes,
-                1
-            )
-        );
-
-        geometry.setAttribute(
-            "aBrightness",
-            new THREE.BufferAttribute(
-                brightness,
-                1
-            )
-        );
-
-
-
-        const material =
-            new THREE.ShaderMaterial({
-
-                uniforms: {},
-
-                vertexShader:
-                    starVertexShader,
-
-                fragmentShader:
-                    starFragmentShader,
-
-                transparent: true,
-
-                depthWrite: false,
-
-                blending:
-                    THREE.AdditiveBlending
-
-            });
-
-        const stars =
-            new THREE.Points(
-                geometry,
-                material
+            this.shootingStars.push(
+                shootingStar
             );
 
-        this.points.add(stars);
+            this.points.add(
+                shootingStar.sprite
+            );
+        }
+
+
+        this.nextShootingStarTime =
+            5 +
+            Math.random() * 10;
     }
 
+
+    private updateShootingStars(
+        time: number,
+        deltaTime: number
+    ): void {
+
+        for (
+            const shootingStar
+            of this.shootingStars
+        ) {
+
+            shootingStar.update(
+                time,
+                deltaTime
+            );
+        }
+
+
+        if (
+            time <
+            this.nextShootingStarTime
+        ) {
+            return;
+        }
+
+
+        const availableStar =
+            this.shootingStars.find(
+                star =>
+                    !star.isActive
+            );
+
+
+        if (availableStar) {
+
+            availableStar.launch(
+                time
+            );
+        }
+
+
+        this.nextShootingStarTime =
+            time +
+            5 +
+            Math.random() * 12;
+    }
 }

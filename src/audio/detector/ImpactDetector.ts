@@ -8,10 +8,17 @@ export default class ImpactDetector {
     private readonly highMidWeight  = 0.6;
     private readonly trebleWeight   = 0.5;
 
+    private readonly minimumPeak = 0.003;
+
     calculate(
         transients: TransientBands,
-        normalizedSpectralFlux: number
+        normalizedSpectralFlux: number,
+        peak: number
     ): number {
+
+        if (peak < this.minimumPeak) {
+            return 0;
+        }
 
         const bandImpact =
             Math.max(
@@ -26,6 +33,9 @@ export default class ImpactDetector {
             bandImpact * 0.6 +
             normalizedSpectralFlux * 0.4;
 
-        return Math.max(0, Math.min(1, impact));
+        return Math.max(
+            0,
+            Math.min(1, impact)
+        );
     }
 }

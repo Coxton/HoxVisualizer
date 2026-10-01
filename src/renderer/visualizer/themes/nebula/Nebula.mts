@@ -3,7 +3,7 @@ import * as THREE from "three";
 import NebulaGas from "./NebulaGas.mjs";
 import NebulaCore from "./NebulaCore.mjs";
 
-import type { AnalyzedAudio } from "../../../../audio/models/AnalyzedAudio.js";
+import type { VisualAudio } from "../../../../audio/visual/models/VisualAudio.mjs";
 
 export default class Nebula {
 
@@ -28,7 +28,7 @@ export default class Nebula {
 
     update(
         elapsedTime: number,
-        audio: AnalyzedAudio | null,
+        audio: VisualAudio | null,
         camera: THREE.Camera
     ): void {
 

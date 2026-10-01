@@ -1,4 +1,4 @@
-import type { AnalyzedAudio } from "../../../audio/models/AnalyzedAudio.js";
+import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
 import type { VisualizerEffect } from "./VisualizerEffect.js";
 
 export default class EffectManager {
@@ -17,7 +17,7 @@ export default class EffectManager {
     }
 
     update(
-        audio: AnalyzedAudio | null,
+        audio: VisualAudio | null,
         elapsedTime: number
     ): void {
         for (const effect of this.effects) {

@@ -6,6 +6,7 @@ import WindowsAudioSourceProvider from "./sources/WindowsAudioSourceProvider";
 export default class AudioManager {
     private capture = new AudioCapture();
     private sourceProvider = new WindowsAudioSourceProvider();
+    
 
     async getSources(): Promise<AudioSource[]> {
         return this.sourceProvider.getSources();
@@ -23,6 +24,39 @@ export default class AudioManager {
 
         this.capture.startProcessAudio(
             processId,
+            onAudioFrame
+        );
+    }
+
+    async startDefaultAudio(
+        onAudioFrame: (frame: AudioFrame) => void
+    ): Promise<void> {
+
+        const sources =
+            await this.getSources();
+
+        const spotify =
+            sources.find(
+                source =>
+                    source.name
+                        .toLowerCase()
+                        .includes("spotify")
+            );
+
+        if (spotify) {
+            this.startProcessAudio(
+                spotify.processId,
+                onAudioFrame
+            );
+
+            return;
+        }
+
+        console.log(
+            "Spotify not found. Falling back to system audio."
+        );
+
+        this.startSystemAudio(
             onAudioFrame
         );
     }

@@ -27,7 +27,7 @@ const createWindow = () => {
 app.whenReady().then(() => {
 
     // Remove the Electron application menu
-    //Menu.setApplicationMenu(null);
+    Menu.setApplicationMenu(null);
 
     const win = createWindow();
 
@@ -39,11 +39,9 @@ app.whenReady().then(() => {
     win.webContents.once("did-finish-load", () => {
 
         // start the SystemAudio Pipeline
-        audioManager.startSystemAudio((frame) => {
-
+        audioManager.startDefaultAudio((frame) => {
             const analyzed = audioAnalyzer.analyze(frame);
 
-            // sending analyzed Audio to the renderer
             audioIPC.sendAudioData(analyzed);
         });
     });

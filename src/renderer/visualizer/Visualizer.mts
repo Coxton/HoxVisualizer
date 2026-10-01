@@ -1,5 +1,8 @@
 import * as THREE from "three";
+
 import type { AnalyzedAudio } from "../../audio/models/AnalyzedAudio.js";
+import VisualResponseLimiter from "../../audio/visual/VisualResponseLimiter.mjs";
+import type { VisualAudio } from "../../audio/visual/models/VisualAudio.mjs";
 
 import EffectManager from "./effects/EffectManager.mjs";
 import SceneManager from "./rendering/SceneManager.mjs";
@@ -7,40 +10,45 @@ import CameraManager from "./rendering/CameraManager.mjs";
 import Renderer from "./rendering/Renderer.mjs";
 
 class Visualizer {
-    //declare managers and renderer
+
+    // Managers and renderer
     private readonly effectManager: EffectManager;
     private readonly sceneManager: SceneManager;
     private readonly cameraManager: CameraManager;
     private readonly renderer: Renderer;
-    
 
     private elapsedTime = 0;
 
-    //Receive analyzed Audio
-    private audio: AnalyzedAudio | null = null;
-
+    // Receive analyzed audio
+    private audio: VisualAudio | null = null;
 
     private readonly timer: THREE.Timer;
 
-
+    private readonly visualResponseLimiter: VisualResponseLimiter;
 
     constructor() {
-        this.timer = new THREE.Timer();
 
-        this.sceneManager = new SceneManager();
+        this.timer =
+            new THREE.Timer();
 
-        this.effectManager = new EffectManager();
+        this.sceneManager =
+            new SceneManager();
 
-        this.cameraManager = new CameraManager();
+        this.effectManager =
+            new EffectManager();
 
+        this.cameraManager =
+            new CameraManager();
 
+        this.visualResponseLimiter =
+            new VisualResponseLimiter();
 
-
-        //add Light
-        const light = new THREE.PointLight(
-            0xffffff,
-            2
-        );
+        // Add Light
+        const light =
+            new THREE.PointLight(
+                0xffffff,
+                2
+            );
 
         light.position.set(
             2,
@@ -48,21 +56,24 @@ class Visualizer {
             4
         );
 
-        this.sceneManager.scene.add(light);
+        this.sceneManager.scene.add(
+            light
+        );
 
         this.setupEventListeners();
 
-        this.renderer = new Renderer();
-
+        this.renderer =
+            new Renderer();
     }
 
-    //Render the Scene
+    // Render the Scene
     start(): void {
+
         this.render();
     }
 
-    //setup scene to render
-        private render(): void {
+    // Setup scene to render
+    private render(): void {
 
         this.timer.update();
 
@@ -77,13 +88,19 @@ class Visualizer {
             this.elapsedTime
         );
 
+        // Update environment and scene objects
+        this.sceneManager.update(
+            this.elapsedTime,
+            deltaTime
+        );
+
+        // Update Nebula
         this.sceneManager.nebula.update(
             this.elapsedTime,
             this.audio,
             this.cameraManager.camera
         );
 
-        
         // Render gas at half resolution
         this.renderer.renderGas(
             this.sceneManager.gasScene,
@@ -96,7 +113,7 @@ class Visualizer {
             this.cameraManager.camera
         );
 
-        //put gas over main scene
+        // Put gas over main scene
         this.renderer.renderGasComposite();
 
         requestAnimationFrame(
@@ -105,18 +122,31 @@ class Visualizer {
     }
 
     update(audio: AnalyzedAudio): void {
-        this.audio = audio;
+
+        const visualAudio =
+            this.visualResponseLimiter.process(
+                audio
+            );
+
+        this.audio =
+            visualAudio;
     }
 
-    //Listen for Events
+    // Listen for Events
     private setupEventListeners(): void {
-        //Resize Visualizer Scene upon resizing the Electron Window
-        window.addEventListener("resize", () => {
-            this.cameraManager.resize();
-            this.renderer.resize();
-        });
-}
 
+        // Resize Visualizer Scene upon
+        // resizing the Electron Window
+        window.addEventListener(
+            "resize",
+            () => {
+
+                this.cameraManager.resize();
+
+                this.renderer.resize();
+            }
+        );
+    }
 }
 
 export default Visualizer;

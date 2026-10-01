@@ -13,8 +13,13 @@ export default class ImpactEnvelope {
                 : this.release;
 
         this.current +=
-            (impact - this.current) * smoothing;
+            (impact - this.current) *
+            smoothing;
 
         return this.current;
+    }
+
+    reset(): void {
+        this.current = 0;
     }
 }

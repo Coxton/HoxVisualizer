@@ -30,4 +30,12 @@ export default class SceneManager {
                 this.gasScene
             );
     }
+
+    update(time: number, deltaTime: number): void {
+
+        this.starField.update(
+            time,
+            deltaTime
+        );
+    }
 }

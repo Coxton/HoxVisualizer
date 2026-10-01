@@ -1,11 +1,11 @@
 import * as THREE from "three";
-import type { AnalyzedAudio } from "../../../../audio/models/AnalyzedAudio.js";
 
 import vertexShader
     from "./shaders/nebulaCore.vert.glsl?raw";
 
 import fragmentShader
     from "./shaders/nebulaCore.frag.glsl?raw";
+import type { VisualAudio } from "../../../../audio/visual/models/VisualAudio.mjs";
 
 export default class NebulaCore {
 
@@ -93,7 +93,7 @@ export default class NebulaCore {
 
     update(
         elapsedTime: number,
-        audio: AnalyzedAudio | null,
+        audio: VisualAudio | null,
         camera: THREE.Camera
     ): void {
 
@@ -107,7 +107,7 @@ export default class NebulaCore {
             .uniforms
             .uMid
             .value =
-            audio?.frequencyBands.mid ?? 0;
+            audio?.mid ?? 0;
 
         this.material
             .uniforms
