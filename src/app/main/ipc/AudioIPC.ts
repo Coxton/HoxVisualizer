@@ -1,5 +1,5 @@
 import { BrowserWindow } from "electron";
-import { AnalyzedAudio } from "../../audio/models/AnalyzedAudio";
+import { AnalyzedAudio } from "../../../audio/models/AnalyzedAudio";
 
 export default class AudioIPC {
     constructor(private readonly window: BrowserWindow) {}

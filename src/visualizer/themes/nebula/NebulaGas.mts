@@ -5,7 +5,7 @@ import vertexShader
 
 import fragmentShader
     from "./shaders/nebulaGas.frag.glsl?raw";
-import type { VisualAudio } from "../../../../audio/visual/models/VisualAudio.mjs";
+import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
 
 export default class NebulaGas {
 

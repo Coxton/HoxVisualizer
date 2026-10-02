@@ -5,7 +5,7 @@ import vertexShader
 
 import fragmentShader
     from "./shaders/nebulaCore.frag.glsl?raw";
-import type { VisualAudio } from "../../../../audio/visual/models/VisualAudio.mjs";
+import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
 
 export default class NebulaCore {
 

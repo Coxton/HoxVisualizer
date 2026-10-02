@@ -286,8 +286,7 @@ void main()
 
 
         /*
-         * Bass slightly changes the scale,
-         * but does not expand the entire nebula.
+         * Bass slightly changes the scale
          */
 
         float largeScale =
@@ -302,10 +301,7 @@ void main()
             );
 
 
-        /*
-         * Medium-scale structure
-         * breaks the large clouds apart.
-         */
+
 
         float mediumCloud =
             noise(
@@ -314,10 +310,7 @@ void main()
             );
 
 
-        /*
-         * Fine structure creates
-         * smaller gas filaments.
-         */
+
 
         float fineCloud =
             noise(
@@ -337,7 +330,7 @@ void main()
 
 
         /*
-         * Convert noise into actual gas.
+         * Convert noise into gas
          */
 
         float sampleDensity =
@@ -352,10 +345,6 @@ void main()
             0.65 +
             mediumCloud * 0.6;
 
-
-        /*
-         * Core illumination.
-         */
 
         float coreDistance =
             length(
@@ -374,8 +363,7 @@ void main()
 
 
         /*
-         * Vocal intensity illuminates
-         * the gas around the core.
+         * Vocal intensity illuminates the gas around the core.
          */
 
         float vocalLight =
@@ -405,12 +393,12 @@ void main()
 
 
         /*
-         * Combine all illumination sources.
+         * Combine all illumination sources
          */
 
         float illumination =
-            0.10 +
-            lightFalloff * 2.0 +
+            0.14 +
+            lightFalloff * 2.2 +
             coreLight * uCoreIntensity +
             vocalLight;
 
@@ -427,10 +415,10 @@ void main()
 
 
         density +=
-            sampleDensity *
-            illumination *
-            audioDensity *
-            0.005;
+        sampleDensity *
+        illumination *
+        audioDensity *
+        0.007;
 
 
         emissionAmount +=
@@ -469,9 +457,6 @@ void main()
         );
 
 
-    /*
-     * Determine the gas color.
-     */
 
     float colorFactor =
         smoothstep(
@@ -504,10 +489,6 @@ void main()
     }
 
 
-    /*
-     * Core and vocal illumination
-     * increase the final gas brightness.
-     */
 
     gasColor *=
         1.0 +

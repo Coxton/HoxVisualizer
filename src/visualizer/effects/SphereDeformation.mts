@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import type { VisualizerEffect } from "./VisualizerEffect.js";
-import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
+import type { VisualAudio } from "../../audio/visual/models/VisualAudio.mjs";
 
 
 export default class SphereDeformation implements VisualizerEffect {

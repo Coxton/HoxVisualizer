@@ -11,7 +11,7 @@
         "url": "git+https://github.com/Coxton/HoxVisualizer.git"
     },
     "author": "Hoxton",
-    "main": "dist/main/main.js",
+    "main": "dist/app/main/main.js",
     "scripts": {
     "build": "tsc",
     "build:renderer": "vite build",

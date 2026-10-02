@@ -1,8 +1,8 @@
 import * as THREE from "three";
 
-import type { AnalyzedAudio } from "../../audio/models/AnalyzedAudio.js";
-import VisualResponseLimiter from "../../audio/visual/VisualResponseLimiter.mjs";
-import type { VisualAudio } from "../../audio/visual/models/VisualAudio.mjs";
+import type { AnalyzedAudio } from "../audio/models/AnalyzedAudio.js";
+import VisualResponseLimiter from "../audio/visual/VisualResponseLimiter.mjs";
+import type { VisualAudio } from "../audio/visual/models/VisualAudio.mjs";
 
 import EffectManager from "./effects/EffectManager.mjs";
 import SceneManager from "./rendering/SceneManager.mjs";

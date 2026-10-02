@@ -1,17 +1,13 @@
 import * as THREE from "three";
 
-
 export default class Sun {
 
-    readonly sprite:
-        THREE.Sprite;
-
+    readonly sprite: THREE.Sprite;
 
     constructor() {
 
         const texture =
             this.createTexture();
-
 
         const material =
             new THREE.SpriteMaterial({
@@ -26,12 +22,10 @@ export default class Sun {
                     THREE.AdditiveBlending
             });
 
-
         this.sprite =
             new THREE.Sprite(
                 material
             );
-
 
         this.sprite.position.set(
             -55,
@@ -39,35 +33,26 @@ export default class Sun {
             -75
         );
 
-
         this.sprite.scale.set(
-            18,
-            18,
+            12,
+            12,
             1
         );
     }
-
 
     private createTexture():
         THREE.CanvasTexture {
 
         const canvas =
-            document.createElement("canvas");
+            document.createElement(
+                "canvas"
+            );
 
         canvas.width = 256;
         canvas.height = 256;
 
-
         const context =
-            canvas.getContext("2d");
-
-        if (!context) {
-
-            throw new Error(
-                "Unable to create Sun texture."
-            );
-        }
-
+            canvas.getContext("2d")!;
 
         const gradient =
             context.createRadialGradient(
@@ -79,32 +64,40 @@ export default class Sun {
                 128
             );
 
-
         gradient.addColorStop(
             0.0,
-            "rgba(255, 255, 245, 1.0)"
+            "rgba(255, 255, 245, 1)"
         );
 
         gradient.addColorStop(
-            0.12,
-            "rgba(255, 250, 220, 1.0)"
+            0.08,
+            "rgba(255, 248, 220, 1)"
         );
 
         gradient.addColorStop(
-            0.30,
-            "rgba(255, 220, 130, 0.75)"
+            0.18,
+            "rgba(255, 220, 150, 0.95)"
+        );
+
+        gradient.addColorStop(
+            0.35,
+            "rgba(255, 170, 70, 0.35)"
         );
 
         gradient.addColorStop(
             0.55,
-            "rgba(255, 180, 70, 0.25)"
+            "rgba(255, 120, 30, 0.10)"
+        );
+
+        gradient.addColorStop(
+            0.75,
+            "rgba(255, 80, 10, 0.025)"
         );
 
         gradient.addColorStop(
             1.0,
-            "rgba(255, 140, 40, 0.0)"
+            "rgba(255, 50, 0, 0)"
         );
-
 
         context.fillStyle =
             gradient;
@@ -116,16 +109,8 @@ export default class Sun {
             256
         );
 
-
-        const texture =
-            new THREE.CanvasTexture(
-                canvas
-            );
-
-        texture.colorSpace =
-            THREE.SRGBColorSpace;
-
-
-        return texture;
+        return new THREE.CanvasTexture(
+            canvas
+        );
     }
 }

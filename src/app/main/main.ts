@@ -1,8 +1,8 @@
 import { app, BrowserWindow, Menu } from "electron/main";
 import path from "node:path";
 
-import AudioManager from "../audio/AudioManager";
-import AudioAnalyzer from "../audio/analysis/AudioAnalyzer";
+import AudioManager from "../../audio/AudioManager";
+import AudioAnalyzer from "../../audio/analysis/AudioAnalyzer";
 import AudioIPC from "./ipc/AudioIPC";
 
 
@@ -17,7 +17,7 @@ const createWindow = () => {
         }
     });
 
-    win.loadFile(path.join(__dirname, "../renderer/index.html"));
+    win.loadFile(path.join(__dirname, "../../renderer/index.html"));
 
     return win;
 };

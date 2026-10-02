@@ -1,4 +1,4 @@
-import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
+import type { VisualAudio } from "../../audio/visual/models/VisualAudio.mjs";
 import type { VisualizerEffect } from "./VisualizerEffect.js";
 
 export default class EffectManager {

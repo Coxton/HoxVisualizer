@@ -3,7 +3,7 @@ import * as THREE from "three";
 import NebulaGas from "./NebulaGas.mjs";
 import NebulaCore from "./NebulaCore.mjs";
 
-import type { VisualAudio } from "../../../../audio/visual/models/VisualAudio.mjs";
+import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
 
 export default class Nebula {
 
