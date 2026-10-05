@@ -4,7 +4,7 @@ import vertexShader
     from "./shaders/nebulaGas.vert.glsl?raw";
 
 import fragmentShader
-    from "./shaders/nebulaGas.frag.glsl?raw";
+    from "./shaders/nebulaGas.frag.mjs";
 
 import type { VisualAudio }
     from "../../../audio/visual/models/VisualAudio.mjs";
@@ -12,10 +12,17 @@ import type { VisualAudio }
 
 export default class NebulaGas {
 
-    readonly mesh: THREE.Mesh;
+    readonly mesh:
+        THREE.Mesh;
+
 
     private readonly material:
         THREE.ShaderMaterial;
+
+
+    private bassResponse = 0;
+
+    private lowMidResponse = 0;
 
     private visualMid = 0;
 
@@ -26,7 +33,7 @@ export default class NebulaGas {
 
         const geometry =
             new THREE.BoxGeometry(
-                15.5,
+                14,
                 6.8,
                 9.7
             );
@@ -161,40 +168,58 @@ export default class NebulaGas {
             elapsedTime;
 
 
-        this.material
-            .uniforms
-            .uBass
-            .value =
+        const targetBass =
             audio?.bass ?? 0;
 
 
-        this.material
-            .uniforms
-            .uLowMid
-            .value =
+        const bassResponse =
+            targetBass > this.bassResponse
+                ? 0.10
+                : 0.045;
+
+
+        this.bassResponse +=
+            (
+                targetBass -
+                this.bassResponse
+            ) *
+            bassResponse;
+
+
+        const targetLowMid =
             audio?.lowMid ?? 0;
+
+
+        const lowMidResponse =
+            targetLowMid > this.lowMidResponse
+                ? 0.12
+                : 0.05;
+
+
+        this.lowMidResponse +=
+            (
+                targetLowMid -
+                this.lowMidResponse
+            ) *
+            lowMidResponse;
 
 
         const targetMid =
             audio?.mid ?? 0;
 
 
-            const midResponse =
-                targetMid > this.visualMid
-                    ? 0.14
-                    : 0.035;
+        const midResponse =
+            targetMid > this.visualMid
+                ? 0.14
+                : 0.035;
 
 
         this.visualMid +=
-            (targetMid - this.visualMid) *
+            (
+                targetMid -
+                this.visualMid
+            ) *
             midResponse;
-
-
-        this.material
-            .uniforms
-            .uMid
-            .value =
-            this.visualMid;
 
 
         const targetVocal =
@@ -211,8 +236,32 @@ export default class NebulaGas {
 
 
         this.vocalResponse +=
-            (targetVocal - this.vocalResponse) *
+            (
+                targetVocal -
+                this.vocalResponse
+            ) *
             vocalResponse;
+
+
+        this.material
+            .uniforms
+            .uBass
+            .value =
+            this.bassResponse;
+
+
+        this.material
+            .uniforms
+            .uLowMid
+            .value =
+            this.lowMidResponse;
+
+
+        this.material
+            .uniforms
+            .uMid
+            .value =
+            this.visualMid;
 
 
         this.material
