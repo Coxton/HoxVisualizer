@@ -1,4 +1,4 @@
-import { AnalyzedAudio } from "../../audio/models/AnalyzedAudio.js";
+import { AnalyzedAudio } from "../models/AnalyzedAudio.js";
 
 
 //type declaration for the analyzed Audio

@@ -3,7 +3,7 @@ import { TransientBands } from "../models/TransientBands";
 
 export default class TransientDetector {
 
-    private previous: FrequencyBands = {
+    private baseline: FrequencyBands = {
         bass: 0,
         lowMid: 0,
         mid: 0,
@@ -13,12 +13,20 @@ export default class TransientDetector {
 
     private initialized = false;
 
-    detect(current: FrequencyBands): TransientBands {
+    private readonly baselineRise = 0.08;
+    private readonly baselineFall = 0.02;
 
-        // Establish baseline after long period of no music
+    private readonly threshold = 0.08;
+
+    detect(
+        current: FrequencyBands
+    ): TransientBands {
+
         if (!this.initialized) {
 
-            this.previous = { ...current };
+            this.baseline =
+                { ...current };
+
             this.initialized = true;
 
             return {
@@ -30,49 +38,135 @@ export default class TransientDetector {
             };
         }
 
+
         const transients: TransientBands = {
+
             bass:
-                Math.max(
-                    0,
-                    current.bass -
-                    this.previous.bass
+                this.detectAttack(
+                    current.bass,
+                    this.baseline.bass
                 ),
 
             lowMid:
-                Math.max(
-                    0,
-                    current.lowMid -
-                    this.previous.lowMid
+                this.detectAttack(
+                    current.lowMid,
+                    this.baseline.lowMid
                 ),
 
             mid:
-                Math.max(
-                    0,
-                    current.mid -
-                    this.previous.mid
+                this.detectAttack(
+                    current.mid,
+                    this.baseline.mid
                 ),
 
             highMid:
-                Math.max(
-                    0,
-                    current.highMid -
-                    this.previous.highMid
+                this.detectAttack(
+                    current.highMid,
+                    this.baseline.highMid
                 ),
 
             treble:
-                Math.max(
-                    0,
-                    current.treble -
-                    this.previous.treble
+                this.detectAttack(
+                    current.treble,
+                    this.baseline.treble
                 )
         };
 
-        this.previous = { ...current };
+
+        this.baseline.bass =
+            this.updateBaseline(
+                this.baseline.bass,
+                current.bass
+            );
+
+        this.baseline.lowMid =
+            this.updateBaseline(
+                this.baseline.lowMid,
+                current.lowMid
+            );
+
+        this.baseline.mid =
+            this.updateBaseline(
+                this.baseline.mid,
+                current.mid
+            );
+
+        this.baseline.highMid =
+            this.updateBaseline(
+                this.baseline.highMid,
+                current.highMid
+            );
+
+        this.baseline.treble =
+            this.updateBaseline(
+                this.baseline.treble,
+                current.treble
+            );
+
 
         return transients;
     }
 
+
     reset(): void {
-        this.initialized = false;
+
+        this.initialized =
+            false;
+
+        this.baseline = {
+            bass: 0,
+            lowMid: 0,
+            mid: 0,
+            highMid: 0,
+            treble: 0
+        };
+    }
+
+
+    private detectAttack(
+        current: number,
+        baseline: number
+    ): number {
+
+        const difference =
+            current -
+            baseline;
+
+
+        if (
+            difference <=
+            this.threshold
+        ) {
+            return 0;
+        }
+
+
+        return Math.min(
+            1,
+            (
+                difference -
+                this.threshold
+            ) /
+            (1 - this.threshold)
+        );
+    }
+
+
+    private updateBaseline(
+        current: number,
+        target: number
+    ): number {
+
+        const response =
+            target > current
+                ? this.baselineRise
+                : this.baselineFall;
+
+
+        return (
+            current +
+            (target - current) *
+            response
+        );
     }
 }

@@ -5,7 +5,10 @@ import vertexShader
 
 import fragmentShader
     from "./shaders/nebulaCore.frag.glsl?raw";
-import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
+
+import type { VisualAudio }
+    from "../../../audio/visual/models/VisualAudio.mjs";
+
 
 export default class NebulaCore {
 
@@ -13,6 +16,7 @@ export default class NebulaCore {
 
     private readonly material:
         THREE.ShaderMaterial;
+
 
     constructor(scene: THREE.Scene) {
 
@@ -22,6 +26,7 @@ export default class NebulaCore {
                 3.5,
                 5
             );
+
 
         this.material =
             new THREE.ShaderMaterial({
@@ -36,23 +41,23 @@ export default class NebulaCore {
                     uCoreColor: {
                         value:
                             new THREE.Color(
-                                1.0,
-                                0.12,
-                                0.0
+                                0.55,
+                                0.85,
+                                1.0
                             )
                     },
 
                     uGlowColor: {
                         value:
                             new THREE.Color(
-                                1.0,
-                                0.85,
-                                0.15
+                                0.92,
+                                0.98,
+                                1.0
                             )
                     },
 
                     uIntensity: {
-                        value: 1.0
+                        value: 2.3
                     },
 
                     uTime: {
@@ -69,6 +74,7 @@ export default class NebulaCore {
                 },
 
                 vertexShader,
+
                 fragmentShader,
 
                 transparent: true,
@@ -79,8 +85,9 @@ export default class NebulaCore {
                     THREE.BackSide,
 
                 blending:
-                    THREE.NormalBlending
+                    THREE.AdditiveBlending
             });
+
 
         this.mesh =
             new THREE.Mesh(
@@ -88,8 +95,12 @@ export default class NebulaCore {
                 this.material
             );
 
-        scene.add(this.mesh);
+
+        scene.add(
+            this.mesh
+        );
     }
+
 
     update(
         elapsedTime: number,
@@ -103,11 +114,13 @@ export default class NebulaCore {
             .value =
             elapsedTime;
 
+
         this.material
             .uniforms
             .uMid
             .value =
             audio?.mid ?? 0;
+
 
         this.material
             .uniforms
@@ -115,10 +128,12 @@ export default class NebulaCore {
             .value =
             audio?.impactEnvelope ?? 0;
 
+
         const localCameraPosition =
             this.mesh.worldToLocal(
                 camera.position.clone()
             );
+
 
         this.material
             .uniforms

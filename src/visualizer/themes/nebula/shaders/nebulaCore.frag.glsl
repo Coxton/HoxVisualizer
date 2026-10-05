@@ -224,21 +224,24 @@ void main()
             sin(
                 uTime * 0.4 +
                 rayPosition.y
-            ) * 0.08;
+            ) *
+            0.08;
 
 
         corePosition.y +=
             cos(
                 uTime * 0.35 +
                 rayPosition.z
-            ) * 0.06;
+            ) *
+            0.06;
 
 
         corePosition.z +=
             sin(
                 uTime * 0.3 +
                 rayPosition.x
-            ) * 0.08;
+            ) *
+            0.08;
 
 
         float radius =
@@ -276,8 +279,8 @@ void main()
 
         sampleDensity =
             smoothstep(
-                0.48,
-                0.72,
+                0.45,
+                0.70,
                 sampleDensity
             );
 
@@ -286,85 +289,69 @@ void main()
             volume;
 
 
-        /*
-         * Base core illumination.
-         */
-
-        float illumination =
-            0.15 +
-            uIntensity *
-            (
-                1.0 -
-                smoothstep(
-                    0.0,
-                    1.5,
-                    radius
-                )
+        float coreFalloff =
+            1.0 -
+            smoothstep(
+                0.0,
+                1.8,
+                radius
             );
 
 
-        /*
-         * Mid frequencies brighten
-         * the core atmosphere.
-         */
+        float centerFalloff =
+            1.0 -
+            smoothstep(
+                0.0,
+                0.75,
+                radius
+            );
+
+
+        float illumination =
+            0.20 +
+            coreFalloff *
+            uIntensity *
+            2.5;
+
 
         illumination +=
+            uMid * 0.35;
+
+
+        illumination +=
+            uImpact * 0.75;
+
+
+        float emission =
+            coreFalloff *
+            uIntensity *
+            2.5;
+
+
+        emission +=
+            centerFalloff *
+            uIntensity *
+            4.0;
+
+
+        emission +=
             uMid * 0.25;
 
 
-        /*
-         * Impact events create
-         * stronger temporary illumination.
-         */
-
-        illumination +=
-            uImpact * 0.45;
-
-
-        /*
-         * Core emission.
-         */
-
-        float emission =
-            uIntensity *
-            (
-                1.0 -
-                smoothstep(
-                    0.0,
-                    1.0,
-                    radius
-                )
-            );
-
-
-        /*
-         * Mid frequencies add
-         * additional warmth.
-         */
-
         emission +=
-            uMid * 0.15;
-
-
-        /*
-         * Impact events create
-         * a stronger emission response.
-         */
-
-        emission +=
-            uImpact * 0.35;
+            uImpact * 0.60;
 
 
         density +=
             sampleDensity *
             illumination *
-            0.05;
+            0.055;
 
 
         emissionAmount +=
             sampleDensity *
             emission *
-            0.03;
+            0.045;
     }
 
 
@@ -372,7 +359,7 @@ void main()
         clamp(
             density,
             0.0,
-            0.8
+            1.0
         );
 
 
@@ -380,14 +367,14 @@ void main()
         clamp(
             emissionAmount,
             0.0,
-            0.8
+            1.0
         );
 
 
-    float colorFactor =
+    float glowFactor =
         smoothstep(
             0.0,
-            0.5,
+            0.75,
             emissionAmount
         );
 
@@ -396,13 +383,37 @@ void main()
         mix(
             uCoreColor,
             uGlowColor,
-            colorFactor
+            glowFactor
         );
 
 
+    float whiteCore =
+        smoothstep(
+            0.30,
+            0.75,
+            emissionAmount
+        );
+
+
+    gasColor =
+        mix(
+            gasColor,
+            vec3(
+                1.0,
+                1.0,
+                1.0
+            ),
+            whiteCore
+        );
+
+
+    float brightness =
+        1.5 +
+        emissionAmount * 8.0;
+
+
     gasColor *=
-        1.0 +
-        emissionAmount * 1.5;
+        brightness;
 
 
     gl_FragColor =

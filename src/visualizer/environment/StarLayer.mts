@@ -140,13 +140,13 @@ export default class StarLayer {
 
 
             movement[index] =
-                (Math.random() - 0.5) * 0.08;
+                (Math.random() - 0.5) * 0.15;
 
             movement[index + 1] =
-                (Math.random() - 0.5) * 0.08;
+                (Math.random() - 0.5) * 0.15;
 
             movement[index + 2] =
-                (Math.random() - 0.5) * 0.08;
+                (Math.random() - 0.5) * 0.15;
 
 
             phase[i] =

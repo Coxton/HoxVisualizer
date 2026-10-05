@@ -127,7 +127,10 @@ export default class AudioAnalyzer {
         const smoothedBands = this.smoother.smooth(normalizedBands);
         
         //calculate transients -> Audio falloff basically
-        const transients = this.transientDetector.detect(smoothedBands);
+        const transients =
+            this.transientDetector.detect(
+                normalizedBands
+            );
         
         //calculate the peak of the collected sample    
         const spectralFlux =

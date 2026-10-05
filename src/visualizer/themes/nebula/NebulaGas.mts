@@ -5,7 +5,10 @@ import vertexShader
 
 import fragmentShader
     from "./shaders/nebulaGas.frag.glsl?raw";
-import type { VisualAudio } from "../../../audio/visual/models/VisualAudio.mjs";
+
+import type { VisualAudio }
+    from "../../../audio/visual/models/VisualAudio.mjs";
+
 
 export default class NebulaGas {
 
@@ -15,21 +18,25 @@ export default class NebulaGas {
         THREE.ShaderMaterial;
 
     private visualMid = 0;
+
     private vocalResponse = 0;
+
 
     constructor(scene: THREE.Scene) {
 
         const geometry =
             new THREE.BoxGeometry(
-                16,
-                7,
-                10
+                15.5,
+                6.8,
+                9.7
             );
+
 
         this.material =
             new THREE.ShaderMaterial({
 
                 uniforms: {
+
                     uTime: {
                         value: 0
                     },
@@ -53,12 +60,20 @@ export default class NebulaGas {
 
                     uLightPosition: {
                         value:
-                            new THREE.Vector3(0, 0, 0)
+                            new THREE.Vector3(
+                                0,
+                                0,
+                                0
+                            )
                     },
 
                     uCorePosition: {
                         value:
-                            new THREE.Vector3(0, 0, 0)
+                            new THREE.Vector3(
+                                0,
+                                0,
+                                0
+                            )
                     },
 
                     uCoreIntensity: {
@@ -68,9 +83,9 @@ export default class NebulaGas {
                     uOuterColor: {
                         value:
                             new THREE.Color(
-                                0.75,
-                                0.025,
-                                0.005
+                                0.65,
+                                0.01,
+                                0.35
                             )
                     },
 
@@ -78,16 +93,25 @@ export default class NebulaGas {
                         value:
                             new THREE.Color(
                                 1.0,
+                                0.06,
+                                0.55
+                            )
+                    },
+
+                    uVioletColor: {
+                        value:
+                            new THREE.Color(
                                 0.28,
-                                0.015
+                                0.08,
+                                0.85
                             )
                     },
 
                     uInnerColor: {
                         value:
                             new THREE.Color(
-                                0.015,
-                                0.22,
+                                0.03,
+                                0.38,
                                 1.0
                             )
                     },
@@ -105,8 +129,10 @@ export default class NebulaGas {
 
                 depthWrite: false,
 
-                side: THREE.BackSide
+                side:
+                    THREE.BackSide
             });
+
 
         this.mesh =
             new THREE.Mesh(
@@ -114,8 +140,12 @@ export default class NebulaGas {
                 this.material
             );
 
-        scene.add(this.mesh);
+
+        scene.add(
+            this.mesh
+        );
     }
+
 
     update(
         elapsedTime: number,
@@ -130,11 +160,13 @@ export default class NebulaGas {
             .value =
             elapsedTime;
 
+
         this.material
             .uniforms
             .uBass
             .value =
             audio?.bass ?? 0;
+
 
         this.material
             .uniforms
@@ -142,17 +174,21 @@ export default class NebulaGas {
             .value =
             audio?.lowMid ?? 0;
 
+
         const targetMid =
             audio?.mid ?? 0;
 
-        const midResponse =
-            targetMid > this.visualMid
-                ? 0.25
-                : 0.04;
+
+            const midResponse =
+                targetMid > this.visualMid
+                    ? 0.14
+                    : 0.035;
+
 
         this.visualMid +=
             (targetMid - this.visualMid) *
             midResponse;
+
 
         this.material
             .uniforms
@@ -160,20 +196,24 @@ export default class NebulaGas {
             .value =
             this.visualMid;
 
+
         const targetVocal =
             (
                 (audio?.mid ?? 0) * 0.6 +
                 (audio?.highMid ?? 0) * 0.4
             );
 
+
         const vocalResponse =
             targetVocal > this.vocalResponse
-                ? 0.18
-                : 0.05;
+                ? 0.11
+                : 0.04;
+
 
         this.vocalResponse +=
             (targetVocal - this.vocalResponse) *
             vocalResponse;
+
 
         this.material
             .uniforms
@@ -181,10 +221,12 @@ export default class NebulaGas {
             .value =
             this.vocalResponse;
 
+
         const localCameraPosition =
             this.mesh.worldToLocal(
                 camera.position.clone()
             );
+
 
         this.material
             .uniforms
@@ -194,10 +236,12 @@ export default class NebulaGas {
                 localCameraPosition
             );
 
+
         const localCorePosition =
             this.mesh.worldToLocal(
                 corePosition.clone()
             );
+
 
         this.material
             .uniforms

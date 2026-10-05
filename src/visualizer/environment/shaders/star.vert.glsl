@@ -8,36 +8,48 @@ uniform float uTime;
 
 varying float vBrightness;
 
-void main() {
+void main()
+{
 
     vec3 animatedPosition =
-    position;
+        position;
 
     animatedPosition +=
         aMovement *
         uTime *
-        0.08;
+        0.5;
+
+
+    animatedPosition =
+        mod(
+            animatedPosition + 50.0,
+            100.0
+        ) -
+        50.0;
+
 
     animatedPosition.x +=
         sin(
-            uTime * 0.015 +
+            uTime * 0.15 +
             aPhase
         ) *
-        aMovement.x;
+        0.015;
 
     animatedPosition.y +=
         sin(
-            uTime * 0.012 +
+            uTime * 0.12 +
             aPhase * 1.37
         ) *
-        aMovement.y;
+        0.015;
 
     animatedPosition.z +=
         cos(
-            uTime * 0.010 +
+            uTime * 0.10 +
             aPhase * 0.73
         ) *
-        aMovement.z;
+        0.015;
+
+
 
     vec4 mvPosition =
         modelViewMatrix *
@@ -46,21 +58,43 @@ void main() {
             1.0
         );
 
+
     float distance =
         length(
             mvPosition.xyz
         );
 
+
+
     gl_Position =
         projectionMatrix *
         mvPosition;
 
+
+    /*
+     * Star size.
+     */
     gl_PointSize =
         aSize *
         100.0;
 
+
+    float twinkle =
+        0.92 +
+        sin(
+            uTime * 0.8 +
+            aPhase
+        ) *
+        0.08;
+
+
+    /*
+     * Combine base brightness with twinkle
+     * and distance attenuation.
+     */
     vBrightness =
         aBrightness *
+        twinkle *
         clamp(
             1.0 -
             distance / 220.0,

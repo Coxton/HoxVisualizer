@@ -5,6 +5,7 @@ uniform float uCoreIntensity;
 
 uniform vec3 uOuterColor;
 uniform vec3 uMidColor;
+uniform vec3 uVioletColor;
 uniform vec3 uInnerColor;
 
 uniform float uTime;
@@ -50,28 +51,52 @@ float noise(vec3 p)
 
 
     float c000 =
-        hash(cell + vec3(0.0, 0.0, 0.0));
+        hash(
+            cell +
+            vec3(0.0, 0.0, 0.0)
+        );
 
     float c100 =
-        hash(cell + vec3(1.0, 0.0, 0.0));
+        hash(
+            cell +
+            vec3(1.0, 0.0, 0.0)
+        );
 
     float c010 =
-        hash(cell + vec3(0.0, 1.0, 0.0));
+        hash(
+            cell +
+            vec3(0.0, 1.0, 0.0)
+        );
 
     float c110 =
-        hash(cell + vec3(1.0, 1.0, 0.0));
+        hash(
+            cell +
+            vec3(1.0, 1.0, 0.0)
+        );
 
     float c001 =
-        hash(cell + vec3(0.0, 0.0, 1.0));
+        hash(
+            cell +
+            vec3(0.0, 0.0, 1.0)
+        );
 
     float c101 =
-        hash(cell + vec3(1.0, 0.0, 1.0));
+        hash(
+            cell +
+            vec3(1.0, 0.0, 1.0)
+        );
 
     float c011 =
-        hash(cell + vec3(0.0, 1.0, 1.0));
+        hash(
+            cell +
+            vec3(0.0, 1.0, 1.0)
+        );
 
     float c111 =
-        hash(cell + vec3(1.0, 1.0, 1.0));
+        hash(
+            cell +
+            vec3(1.0, 1.0, 1.0)
+        );
 
 
     float x00 =
@@ -145,9 +170,9 @@ float nebulaNoise(vec3 p)
 
 
     return
-        large * 0.55 +
-        medium * 0.30 +
-        fine * 0.15;
+        large * 0.50 +
+        medium * 0.32 +
+        fine * 0.18;
 }
 
 
@@ -163,10 +188,11 @@ vec3 flowPosition(
     float largeFlow =
         time * 0.06;
 
-    float largeAmplitude =
+
+    float bassFlow =
         0.35 +
-        uLowMid * 0.30 +
-        uBass * 0.22;
+        uBass * 0.75 +
+        uLowMid * 0.30;
 
 
     flowedPosition.x +=
@@ -174,7 +200,7 @@ vec3 flowPosition(
             position.z * 0.45 +
             largeFlow
         ) *
-        largeAmplitude;
+        bassFlow;
 
 
     flowedPosition.y +=
@@ -182,7 +208,10 @@ vec3 flowPosition(
             position.x * 0.35 +
             largeFlow * 0.8
         ) *
-        (0.20 + uLowMid * 0.18);
+        (
+            0.20 +
+            uLowMid * 0.35
+        );
 
 
     flowedPosition.z +=
@@ -190,15 +219,19 @@ vec3 flowPosition(
             position.y * 0.40 +
             largeFlow * 0.9
         ) *
-        (0.30 + uLowMid * 0.22);
+        (
+            0.30 +
+            uLowMid * 0.40
+        );
 
 
     float turbulence =
         time * 0.15;
 
-    float turbulenceAmplitude =
+
+    float midFlow =
         0.12 +
-        uMid * 0.26;
+        uMid * 0.40;
 
 
     flowedPosition.x +=
@@ -206,7 +239,7 @@ vec3 flowPosition(
             position.y * 1.3 +
             turbulence
         ) *
-        turbulenceAmplitude;
+        midFlow;
 
 
     flowedPosition.y +=
@@ -214,7 +247,10 @@ vec3 flowPosition(
             position.z * 1.1 +
             turbulence * 0.8
         ) *
-        (0.10 + uMid * 0.20);
+        (
+            0.10 +
+            uMid * 0.30
+        );
 
 
     flowedPosition.z +=
@@ -222,10 +258,80 @@ vec3 flowPosition(
             position.x * 1.5 +
             turbulence * 1.1
         ) *
-        (0.12 + uMid * 0.22);
+        (
+            0.12 +
+            uMid * 0.32
+        );
 
 
     return flowedPosition;
+}
+
+
+vec3 getGasColor(
+    float distanceFactor,
+    float localNoise
+)
+{
+    float variation =
+        (
+            localNoise -
+            0.5
+        ) *
+        0.18;
+
+
+    float factor =
+        distanceFactor * 0.70 +
+        variation;
+
+
+    float blueResponse =
+        clamp(
+            uMid * 0.28 +
+            uVocalIntensity * 0.34,
+            0.0,
+            0.28
+        );
+
+
+    factor +=
+        blueResponse;
+
+
+    factor =
+        clamp(
+            factor,
+            0.0,
+            1.0
+        );
+
+
+    if (factor < 0.35)
+    {
+        return mix(
+            uOuterColor,
+            uMidColor,
+            factor / 0.35
+        );
+    }
+
+
+    if (factor < 0.60)
+    {
+        return mix(
+            uMidColor,
+            uVioletColor,
+            (factor - 0.35) / 0.25
+        );
+    }
+
+
+    return mix(
+        uVioletColor,
+        uInnerColor,
+        (factor - 0.60) / 0.40
+    );
 }
 
 
@@ -248,10 +354,13 @@ void main()
     float density =
         0.0;
 
-    float emissionAmount =
+    float emission =
         0.0;
 
-    float colorAmount =
+    vec3 accumulatedColor =
+        vec3(0.0);
+
+    float accumulatedColorWeight =
         0.0;
 
 
@@ -285,22 +394,11 @@ void main()
             );
 
 
-        /*
-         * Bass slightly changes the scale
-         */
-
-        float largeScale =
-            0.35 -
-            uBass * 0.005;
-
-
         float largeCloud =
             noise(
                 flowedPosition *
-                largeScale
+                0.35
             );
-
-
 
 
         float mediumCloud =
@@ -310,8 +408,6 @@ void main()
             );
 
 
-
-
         float fineCloud =
             noise(
                 flowedPosition *
@@ -319,31 +415,23 @@ void main()
             );
 
 
-        /*
-         * Combine the different scales.
-         */
-
         float gas =
             largeCloud * 0.55 +
             mediumCloud * 0.30 +
             fineCloud * 0.15;
 
 
-        /*
-         * Convert noise into gas
-         */
-
         float sampleDensity =
             smoothstep(
-                0.43,
-                0.67,
+                0.42,
+                0.68,
                 gas
             );
 
 
         sampleDensity *=
-            0.65 +
-            mediumCloud * 0.6;
+            0.55 +
+            mediumCloud * 0.85;
 
 
         float coreDistance =
@@ -353,7 +441,7 @@ void main()
             );
 
 
-        float coreLight =
+        float innerRegion =
             1.0 -
             smoothstep(
                 0.5,
@@ -362,19 +450,22 @@ void main()
             );
 
 
-        /*
-         * Vocal intensity illuminates the gas around the core.
-         */
-
-        float vocalLight =
-            uVocalIntensity *
-            coreLight *
-            2.0;
+        float outerRegion =
+            smoothstep(
+                2.0,
+                7.2,
+                coreDistance
+            );
 
 
-        /*
-         * Existing external light.
-         */
+        float coreLight =
+            1.0 -
+            smoothstep(
+                0.4,
+                4.5,
+                coreDistance
+            );
+
 
         float lightDistance =
             length(
@@ -392,44 +483,119 @@ void main()
             );
 
 
-        /*
-         * Combine all illumination sources
-         */
+        float bassEnergy =
+            uBass *
+            1.8;
+
+
+        float midEnergy =
+            uMid *
+            1.6;
+
+
+        float vocalEnergy =
+            uVocalIntensity *
+            2.0;
+
 
         float illumination =
-            0.14 +
-            lightFalloff * 2.2 +
-            coreLight * uCoreIntensity +
-            vocalLight;
+            0.08;
 
 
-        /*
-         * Bass and mid frequencies affect
-         * the perceived density of the gas.
-         */
+        illumination +=
+            lightFalloff *
+            1.8;
+
+
+        illumination +=
+            coreLight *
+            uCoreIntensity *
+            0.55;
+
+
+        illumination +=
+            bassEnergy *
+            outerRegion *
+            0.65;
+
+
+        illumination +=
+            midEnergy *
+            innerRegion *
+            0.75;
+
+
+        illumination +=
+            vocalEnergy *
+            innerRegion *
+            0.85;
+
 
         float audioDensity =
             1.0 +
-            uBass * 0.15 +
-            uMid * 0.20;
+            uBass * 0.55 +
+            uLowMid * 0.30 +
+            uMid * 0.45 +
+            uVocalIntensity * 0.60;
+
+
+        float sampleContribution =
+            sampleDensity *
+            illumination *
+            audioDensity *
+            0.009;
 
 
         density +=
-        sampleDensity *
-        illumination *
-        audioDensity *
-        0.007;
+            sampleContribution;
 
 
-        emissionAmount +=
+        float distanceFactor =
+            1.0 -
+            smoothstep(
+                0.8,
+                4.8,
+                coreDistance
+            );
+
+
+        float localColorNoise =
+            largeCloud * 0.45 +
+            mediumCloud * 0.35 +
+            fineCloud * 0.20;
+
+
+        vec3 sampleColor =
+            getGasColor(
+                distanceFactor,
+                localColorNoise
+            );
+
+
+        accumulatedColor +=
+            sampleColor *
+            sampleContribution;
+
+
+        accumulatedColorWeight +=
+            sampleContribution;
+
+
+        emission +=
             sampleDensity *
-            vocalLight *
-            0.032;
+            (
+                bassEnergy *
+                outerRegion *
+                0.020 +
 
+                midEnergy *
+                innerRegion *
+                0.028 +
 
-        colorAmount +=
-            sampleDensity *
-            0.025;
+                vocalEnergy *
+                innerRegion *
+                0.035
+            );
     }
 
 
@@ -437,62 +603,40 @@ void main()
         clamp(
             density,
             0.0,
-            0.6
+            0.72
         );
 
 
-    emissionAmount =
+    emission =
         clamp(
-            emissionAmount,
+            emission,
             0.0,
-            0.6
+            0.8
         );
 
 
-    colorAmount =
-        clamp(
-            colorAmount,
-            0.0,
-            1.0
+    vec3 gasColor =
+        accumulatedColor /
+        max(
+            accumulatedColorWeight,
+            0.0001
         );
 
 
-
-    float colorFactor =
-        smoothstep(
-            0.08,
-            0.35,
-            colorAmount
-        );
+    float audioGlow =
+        1.0 +
+        uBass * 0.18 +
+        uMid * 0.26 +
+        uVocalIntensity * 0.34;
 
 
-    vec3 gasColor;
-
-
-    if (colorFactor < 0.5)
-    {
-        gasColor =
-            mix(
-                uOuterColor,
-                uMidColor,
-                colorFactor * 2.0
-            );
-    }
-    else
-    {
-        gasColor =
-            mix(
-                uMidColor,
-                uInnerColor,
-                (colorFactor - 0.5) * 2.0
-            );
-    }
-
+    gasColor *=
+        audioGlow;
 
 
     gasColor *=
         1.0 +
-        emissionAmount * 12.0;
+        emission * 1.6;
 
 
     gl_FragColor =
