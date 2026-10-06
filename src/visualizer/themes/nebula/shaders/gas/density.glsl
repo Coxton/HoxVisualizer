@@ -65,10 +65,6 @@ float getCloudDensity(
         );
 
 
-    /*
-     * SPATIAL FREQUENCY REGIONS
-     */
-
     float outerRegion =
         smoothstep(
             2.5,
@@ -112,10 +108,6 @@ float getCloudDensity(
         );
 
 
-    /*
-     * BASE CLOUD LAYERS
-     */
-
     float largeLayer =
         smoothstep(
             0.38,
@@ -148,12 +140,6 @@ float getCloudDensity(
         );
 
 
-    /*
-     * BASS
-     *
-     * Strongest toward the outside.
-     */
-
     float bassLayer =
         largeLayer *
         (
@@ -165,12 +151,6 @@ float getCloudDensity(
             outerRegion * 0.75
         );
 
-
-    /*
-     * LOW-MID
-     *
-     * Occupies the broad middle/outer structure.
-     */
 
     float lowMidLayer =
         mediumLayer *
@@ -184,12 +164,6 @@ float getCloudDensity(
         );
 
 
-    /*
-     * MID
-     *
-     * Strongest toward the central cloud.
-     */
-
     float midLayer =
         fineLayer *
         (
@@ -201,13 +175,6 @@ float getCloudDensity(
             midRegion * 0.85
         );
 
-
-    /*
-     * HIGH-MID
-     *
-     * Finer structures concentrated
-     * toward the inner nebula.
-     */
 
     float highMidLayer =
         filamentLayer *
@@ -221,12 +188,6 @@ float getCloudDensity(
         );
 
 
-    /*
-     * VOCALS
-     *
-     * Mostly inner fine structure.
-     */
-
     float vocalLayer =
         filamentLayer *
         (
@@ -238,15 +199,6 @@ float getCloudDensity(
             coreRegion * 0.90
         );
 
-
-    /*
-     * TREBLE
-     *
-     * Sparse, fine detail.
-     *
-     * Kept away from the dense center so it
-     * reads as delicate structure rather than noise.
-     */
 
     float ultraFine =
         smoothstep(
@@ -268,10 +220,6 @@ float getCloudDensity(
         );
 
 
-    /*
-     * COMBINE
-     */
-
     float cloudDensity =
         bassLayer * 0.32 +
         lowMidLayer * 0.27 +
@@ -280,10 +228,6 @@ float getCloudDensity(
         vocalLayer * 0.06 +
         trebleLayer * 0.03;
 
-
-    /*
-     * FINE DETAIL CONTRAST
-     */
 
     float fineContrast =
         1.0 +
@@ -299,10 +243,6 @@ float getCloudDensity(
             fineContrast
         );
 
-
-    /*
-     * RESTRAINED GLOBAL AUDIO RESPONSE
-     */
 
     float audioDensity =
         getAudioDensity();

@@ -26,6 +26,9 @@ vec3 flowPosition(
     float vocalResponse =
         getVocalResponse();
 
+    float impactResponse =
+        getImpactResponse();
+
 
     vec3 relativePosition =
         position -
@@ -63,16 +66,10 @@ vec3 flowPosition(
         );
 
 
-    /*
-     * BASS
-     *
-     * Large-scale movement.
-     * Bass primarily affects the outer mass.
-     */
-
     float bassMotion =
         bassResponse *
         0.75;
+
 
     float bassExpansion =
         1.0 +
@@ -90,18 +87,40 @@ vec3 flowPosition(
         bassExpansion;
 
 
-    /*
-     * LOW-MID
-     *
-     * Slow, broad rotational movement.
-     */
+    float impactExpansion =
+        1.0 +
+        impactResponse *
+        0.10;
+
+
+    flowedPosition =
+        uCorePosition +
+        (
+            flowedPosition -
+            uCorePosition
+        ) *
+        impactExpansion;
+
+
+    vec3 impactDirection =
+        normalize(
+            relativePosition +
+            vec3(
+                0.0001
+            )
+        );
+
+
+    flowedPosition +=
+        impactDirection *
+        impactResponse *
+        0.16;
+
 
     float orbitalStrength =
         0.16 +
-        lowMidResponse *
-        0.30 +
-        bassResponse *
-        0.06;
+        lowMidResponse * 0.30 +
+        bassResponse * 0.06;
 
 
     float orbitalAngle =
@@ -140,10 +159,6 @@ vec3 flowPosition(
         coreInfluence;
 
 
-    /*
-     * LOW-MID BROAD FLOW
-     */
-
     flowedPosition.x +=
         sin(
             position.z * 0.28 +
@@ -176,13 +191,6 @@ vec3 flowPosition(
             lowMidResponse * 0.85
         );
 
-
-    /*
-     * MID
-     *
-     * Main cloud turbulence.
-     * Higher spatial frequency than the low-mid movement.
-     */
 
     float turbulenceTime =
         time * 0.11;
@@ -230,12 +238,6 @@ vec3 flowPosition(
         1.50;
 
 
-    /*
-     * HIGH-MID
-     *
-     * Fine twisting structures.
-     */
-
     float highMidTime =
         time * 0.16;
 
@@ -268,28 +270,31 @@ vec3 flowPosition(
         highMidX *
         highMidResponse *
         0.48 *
-        (0.35 + innerInfluence * 0.65);
+        (
+            0.35 +
+            innerInfluence * 0.65
+        );
 
 
     flowedPosition.y +=
         highMidY *
         highMidResponse *
         0.55 *
-        (0.35 + innerInfluence * 0.65);
+        (
+            0.35 +
+            innerInfluence * 0.65
+        );
 
 
     flowedPosition.z +=
         highMidZ *
         highMidResponse *
         0.52 *
-        (0.35 + innerInfluence * 0.65);
+        (
+            0.35 +
+            innerInfluence * 0.65
+        );
 
-
-    /*
-     * VOCALS
-     *
-     * Very localized twisting layered on top.
-     */
 
     float vocalFlow =
         sin(
@@ -320,15 +325,6 @@ vec3 flowPosition(
         0.60 *
         innerInfluence;
 
-
-    /*
-     * TREBLE
-     *
-     * Tiny, rapid spatial detail.
-     *
-     * Deliberately kept subtle so treble does not
-     * turn into visual flicker.
-     */
 
     float trebleTime =
         time * 0.22;
@@ -378,10 +374,6 @@ vec3 flowPosition(
         0.15 *
         outerInfluence;
 
-
-    /*
-     * SECONDARY LOW-MID WAVE
-     */
 
     float secondaryWave =
         sin(

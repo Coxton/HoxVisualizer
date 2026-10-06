@@ -58,6 +58,16 @@ float getVocalResponse()
 }
 
 
+float getImpactResponse()
+{
+    return smoothstep(
+        0.08,
+        0.65,
+        uImpact
+    );
+}
+
+
 float getAudioIllumination()
 {
     float bassEnergy =
@@ -96,9 +106,15 @@ float getAudioIllumination()
         );
 
     return max(
-        max(bassEnergy, midEnergy),
         max(
-            max(highMidEnergy, trebleEnergy),
+            bassEnergy,
+            midEnergy
+        ),
+        max(
+            max(
+                highMidEnergy,
+                trebleEnergy
+            ),
             vocalEnergy
         )
     );
@@ -114,5 +130,6 @@ float getAudioDensity()
         uMid * 0.45 +
         uHighMid * 0.30 +
         uTreble * 0.18 +
-        uVocalIntensity * 0.45;
+        uVocalIntensity * 0.45 +
+        getImpactResponse() * 0.35;
 }

@@ -68,6 +68,10 @@ export default class NebulaGas {
                         value: 0
                     },
 
+                    uImpact: {
+                        value: 0
+                    },
+
                     uCameraPosition: {
                         value:
                             new THREE.Vector3()
@@ -283,6 +287,12 @@ export default class NebulaGas {
             .uTreble
             .value =
             audio?.treble ?? 0;    
+
+        this.material
+            .uniforms
+            .uImpact
+            .value =
+            audio?.impactEnvelope ?? 0;    
 
 
         this.material
