@@ -60,6 +60,14 @@ export default class NebulaGas {
                         value: 0
                     },
 
+                    uHighMid: {
+                        value: 0
+                    },
+
+                    uTreble: {
+                        value: 0
+                    },
+
                     uCameraPosition: {
                         value:
                             new THREE.Vector3()
@@ -262,6 +270,19 @@ export default class NebulaGas {
             .uMid
             .value =
             this.visualMid;
+
+        this.material
+            .uniforms
+            .uHighMid
+            .value =
+            audio?.highMid ?? 0;
+
+
+        this.material
+            .uniforms
+            .uTreble
+            .value =
+            audio?.treble ?? 0;    
 
 
         this.material

@@ -23,6 +23,8 @@ uniform float uTime;
 uniform float uBass;
 uniform float uLowMid;
 uniform float uMid;
+uniform float uHighMid;
+uniform float uTreble;
 uniform float uVocalIntensity;
 
 varying vec3 vLocalPosition;

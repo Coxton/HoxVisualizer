@@ -28,6 +28,26 @@ float getMidResponse()
 }
 
 
+float getHighMidResponse()
+{
+    return smoothstep(
+        0.10,
+        0.65,
+        uHighMid
+    );
+}
+
+
+float getTrebleResponse()
+{
+    return smoothstep(
+        0.08,
+        0.60,
+        uTreble
+    );
+}
+
+
 float getVocalResponse()
 {
     return smoothstep(
@@ -47,7 +67,6 @@ float getAudioIllumination()
             uBass
         );
 
-
     float midEnergy =
         smoothstep(
             0.16,
@@ -55,6 +74,19 @@ float getAudioIllumination()
             uMid
         );
 
+    float highMidEnergy =
+        smoothstep(
+            0.12,
+            0.65,
+            uHighMid
+        );
+
+    float trebleEnergy =
+        smoothstep(
+            0.10,
+            0.60,
+            uTreble
+        );
 
     float vocalEnergy =
         smoothstep(
@@ -63,11 +95,10 @@ float getAudioIllumination()
             uVocalIntensity
         );
 
-
     return max(
-        bassEnergy,
+        max(bassEnergy, midEnergy),
         max(
-            midEnergy,
+            max(highMidEnergy, trebleEnergy),
             vocalEnergy
         )
     );
@@ -81,5 +112,7 @@ float getAudioDensity()
         uBass * 0.55 +
         uLowMid * 0.30 +
         uMid * 0.45 +
-        uVocalIntensity * 0.60;
+        uHighMid * 0.30 +
+        uTreble * 0.18 +
+        uVocalIntensity * 0.45;
 }
