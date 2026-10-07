@@ -1,4 +1,4 @@
-import Renderer from "./Renderer";
+import FrontendRenderer from "./FrontendRenderer";
 import WebSocketClient from "./WebSocketClient";
 
 const params =
@@ -9,7 +9,7 @@ const params =
 const useWebSocket =
     params.get("source") === "websocket";
 
-let renderer: Renderer;
+let renderer: FrontendRenderer;
 
 if (useWebSocket) {
 
@@ -17,7 +17,7 @@ if (useWebSocket) {
         new WebSocketClient();
 
     renderer =
-        new Renderer(
+        new FrontendRenderer(
             webSocketClient.onData.bind(
                 webSocketClient
             )
@@ -26,7 +26,7 @@ if (useWebSocket) {
 } else {
 
     renderer =
-        new Renderer(
+        new FrontendRenderer(
             window.audio.onData
         );
 }

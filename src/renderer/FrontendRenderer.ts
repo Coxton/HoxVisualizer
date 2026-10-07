@@ -1,7 +1,7 @@
 import Visualizer from "../visualizer/Visualizer.mjs";
 import type { VisualAudio } from "../audio/visual/models/VisualAudio.mjs";
 
-export default class Renderer {
+export default class FrontendRenderer {
 
     private visualizer: Visualizer;
 

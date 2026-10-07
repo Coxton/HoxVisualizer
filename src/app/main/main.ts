@@ -1,5 +1,7 @@
 import { app, BrowserWindow, Menu } from "electron/main";
+import { shell } from "electron";
 import path from "node:path";
+import dotenv from "dotenv";
 
 import Server from "../../server/Server";
 
@@ -8,6 +10,8 @@ import AudioAnalyzer from "../../audio/analysis/AudioAnalyzer";
 import AudioIPC from "./ipc/AudioIPC";
 
 import VisualResponseLimiter from "../../audio/visual/VisualResponseLimiter.mjs";
+
+import SpotifyAuth from "../../integrations/spotify/SpotifyAuth";
 
 
 // create Electron Window and load preload file
@@ -25,6 +29,10 @@ const createWindow = () => {
 
     return win;
 };
+
+dotenv.config({
+    path: "spotify.env"
+});
 
 
 // start the main Process
@@ -46,19 +54,30 @@ app.whenReady().then(() => {
     const visualResponseLimiter =
         new VisualResponseLimiter();
 
+
+    const spotifyAuth =
+        new SpotifyAuth(
+            "http://127.0.0.1:3000/spotify/callback"
+        );
+
     // start processes once the window has finished loading
-    win.webContents.once("did-finish-load", () => {
+    win.webContents.once("did-finish-load", async () => {
 
         // start the SystemAudio Pipeline
         audioManager.startDefaultAudio((frame) => {
             const analyzed = audioAnalyzer.analyze(frame);
 
             //convert analysation Audio to visual Audio
-            const visualAudio = visualResponseLimiter.process(analyzed);
+            const visualAudio =
+                visualResponseLimiter.process(analyzed);
 
             audioIPC.sendAudioData(visualAudio);
-            
+
             server.broadcast(visualAudio);
         });
+
+        await shell.openExternal(
+            spotifyAuth.getAuthorizationURL()
+        );
     });
 });
