@@ -53,12 +53,12 @@ export default class AudioManager {
         }
 
         console.log(
-            "Spotify not found. Falling back to system audio."
+            "Spotify not found"
         );
 
-        this.startSystemAudio(
+/*         this.startSystemAudio(
             onAudioFrame
-        );
+        ); */
     }
 
     stop(): void {

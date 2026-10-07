@@ -75,53 +75,6 @@ export default class AudioAnalyzer {
         const normalizedVolume = this.normalizer.normalizeVolume(volume);
         const normalizedBands = this.normalizer.normalizeBands(frequencyBands);
 
-        //DEBUG
-        /* if (frame.timestamp - this.debugTimer > 5000) {
-
-            this.debugTimer = frame.timestamp;
-
-            const debug = this.normalizer.getDebugState();
-
-            console.log("=== NORMALIZER DEBUG ===");
-
-            console.log("Volume Maximum:", debug.volumeMaximum);
-
-            console.log(
-                "Bass:",
-                "raw =", frequencyBands.bass,
-                "ref =", debug.referenceLevels.bass,
-                "norm =", normalizedBands.bass
-            );
-
-            console.log(
-                "Low Mid:",
-                "raw =", frequencyBands.lowMid,
-                "ref =", debug.referenceLevels.lowMid,
-                "norm =", normalizedBands.lowMid
-            );
-
-            console.log(
-                "Mid:",
-                "raw =", frequencyBands.mid,
-                "ref =", debug.referenceLevels.mid,
-                "norm =", normalizedBands.mid
-            );
-
-            console.log(
-                "High Mid:",
-                "raw =", frequencyBands.highMid,
-                "ref =", debug.referenceLevels.highMid,
-                "norm =", normalizedBands.highMid
-            );
-
-            console.log(
-                "Treble:",
-                "raw =", frequencyBands.treble,
-                "ref =", debug.referenceLevels.treble,
-                "norm =", normalizedBands.treble
-            );
-        } */
-
 
         //further smooth the band values    
         const smoothedBands = this.smoother.smooth(normalizedBands);

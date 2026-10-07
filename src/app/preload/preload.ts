@@ -7,9 +7,8 @@ contextBridge.exposeInMainWorld("audio", {
 
         ipcRenderer.on("audio-data", (_event, data) => {
 
-
-
-            callback(data);
+             callback(data);
+             
         });
     }
 });

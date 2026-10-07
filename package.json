@@ -13,21 +13,25 @@
     "author": "Hoxton",
     "main": "dist/app/main/main.js",
     "scripts": {
-    "build": "tsc",
-    "build:renderer": "vite build",
-    "start": "npm run build && npm run build:renderer && electron ."
+        "build": "tsc",
+        "build:renderer": "vite build",
+        "start": "npm run build && npm run build:renderer && electron ."
     },
     "devDependencies": {
+        "@types/express": "^5.0.6",
         "@types/node": "^26.5.1",
         "@types/three": "^0.186.0",
+        "@types/ws": "^8.18.2",
         "electron": "^44.3.0",
         "typescript": "^7.0.2",
         "vite": "^8.3.0"
     },
     "dependencies": {
+        "express": "^5.2.1",
         "fft.js": "^4.0.4",
         "loopback-capture": "^3.0.2",
         "node-addon-api": "^8.9.2",
-        "three": "^0.186.0"
+        "three": "^0.186.0",
+        "ws": "^8.22.0"
     }
 }

@@ -1,17 +1,36 @@
 import Visualizer from "../visualizer/Visualizer.mjs";
+import type { VisualAudio } from "../audio/visual/models/VisualAudio.mjs";
 
-const visualizer =
-    new Visualizer();
+export default class Renderer {
 
-visualizer.start();
+    private visualizer: Visualizer;
 
-window.audio.onData(
-    (data) => {
+    constructor(
+        onData: (
+            callback: (data: VisualAudio) => void
+        ) => void
+    ) {
 
-        visualizer.update(
-            data as Parameters<
-                typeof visualizer.update
-            >[0]
+        this.visualizer =
+            new Visualizer();
+
+        onData(
+            (data) => {
+                this.update(data);
+            }
         );
     }
-);
+
+    start(): void {
+
+        this.visualizer.start();
+
+    }
+
+    update(data: VisualAudio): void {
+
+        this.visualizer.update(data);
+
+    }
+
+}

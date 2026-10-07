@@ -1,7 +1,5 @@
 import * as THREE from "three";
 
-import type { AnalyzedAudio } from "../audio/models/AnalyzedAudio.js";
-import VisualResponseLimiter from "../audio/visual/VisualResponseLimiter.mjs";
 import type { VisualAudio } from "../audio/visual/models/VisualAudio.mjs";
 
 import EffectManager from "./effects/EffectManager.mjs";
@@ -24,7 +22,7 @@ class Visualizer {
 
     private readonly timer: THREE.Timer;
 
-    private readonly visualResponseLimiter: VisualResponseLimiter;
+
 
     constructor() {
 
@@ -40,8 +38,6 @@ class Visualizer {
         this.cameraManager =
             new CameraManager();
 
-        this.visualResponseLimiter =
-            new VisualResponseLimiter();
 
         // Add Light
         const light =
@@ -121,15 +117,10 @@ class Visualizer {
         );
     }
 
-    update(audio: AnalyzedAudio): void {
-
-        const visualAudio =
-            this.visualResponseLimiter.process(
-                audio
-            );
+    update(audio: VisualAudio): void {
 
         this.audio =
-            visualAudio;
+            audio;
     }
 
     // Listen for Events

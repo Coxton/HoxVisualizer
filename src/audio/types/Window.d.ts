@@ -1,4 +1,4 @@
-import { AnalyzedAudio } from "../models/AnalyzedAudio.js";
+import { VisualAudio } from "../visual/models/VisualAudio.mjs";
 
 
 //type declaration for the analyzed Audio
@@ -8,7 +8,7 @@ declare global {
 
         audio: {
 
-            onData(callback: (data: AnalyzedAudio) => void): void;
+            onData(callback: (data: VisualAudio) => void): void;
 
         };
 

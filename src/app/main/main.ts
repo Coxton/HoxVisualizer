@@ -1,9 +1,13 @@
 import { app, BrowserWindow, Menu } from "electron/main";
 import path from "node:path";
 
+import Server from "../../server/Server";
+
 import AudioManager from "../../audio/AudioManager";
 import AudioAnalyzer from "../../audio/analysis/AudioAnalyzer";
 import AudioIPC from "./ipc/AudioIPC";
+
+import VisualResponseLimiter from "../../audio/visual/VisualResponseLimiter.mjs";
 
 
 // create Electron Window and load preload file
@@ -29,11 +33,18 @@ app.whenReady().then(() => {
     // Remove the Electron application menu
     //Menu.setApplicationMenu(null);
 
+    const server = new Server();
+
+        server.start();
+
     const win = createWindow();
 
     const audioManager = new AudioManager();
     const audioAnalyzer = new AudioAnalyzer();
     const audioIPC = new AudioIPC(win);
+
+    const visualResponseLimiter =
+        new VisualResponseLimiter();
 
     // start processes once the window has finished loading
     win.webContents.once("did-finish-load", () => {
@@ -42,7 +53,12 @@ app.whenReady().then(() => {
         audioManager.startDefaultAudio((frame) => {
             const analyzed = audioAnalyzer.analyze(frame);
 
-            audioIPC.sendAudioData(analyzed);
+            //convert analysation Audio to visual Audio
+            const visualAudio = visualResponseLimiter.process(analyzed);
+
+            audioIPC.sendAudioData(visualAudio);
+            
+            server.broadcast(visualAudio);
         });
     });
 });
