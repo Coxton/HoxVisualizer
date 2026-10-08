@@ -5,7 +5,6 @@ export interface SpotifyTrack {
     album: string;
     artworkUrl: string | null;
     durationMs: number;
-    progressMs: number;
 }
 
 export interface SpotifyPlayback {

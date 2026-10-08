@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { Server as HttpServer } from "node:http";
 import { WebSocketServer, WebSocket } from "ws";
+import SpotifyAuth from "../integrations/spotify/SpotifyAuth";
 
 export default class Server {
 
@@ -15,7 +16,9 @@ export default class Server {
 
 
 
-    constructor() {
+    constructor(
+        private readonly spotifyAuth: SpotifyAuth
+    ) {
         this.app = express();
         this.clients = new Set();
 
@@ -25,6 +28,48 @@ export default class Server {
             )
         );
 
+        this.app.get(
+            "/spotify/callback",
+            async (req, res) => {
+
+                const code =
+                    req.query.code;
+
+                const state =
+                    req.query.state;
+
+                if (
+                    typeof code !== "string" ||
+                    typeof state !== "string"
+                ) {
+                    res.status(400).send(
+                        "Spotify authentication failed."
+                    );
+
+                    return;
+                }
+
+                try {
+                    await this.spotifyAuth.authenticate(
+                        code,
+                        state
+                    );
+
+                    res.send(
+                        "Spotify authentication successful. You can close this window."
+                    );
+                } catch (error) {
+                    console.error(
+                        "Spotify authentication failed:",
+                        error
+                    );
+
+                    res.status(500).send(
+                        "Spotify authentication failed."
+                    );
+                }
+            }
+        );
     }
 
 

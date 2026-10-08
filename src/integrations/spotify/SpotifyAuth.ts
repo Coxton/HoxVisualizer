@@ -1,9 +1,11 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
+import path from "node:path";
 
 export default class SpotifyAuth {
     private readonly clientId: string;
     private readonly redirectUri: string;
+    private readonly envPath: string;
 
     
 
@@ -15,7 +17,8 @@ export default class SpotifyAuth {
     private state: string | null = null;
 
     constructor(
-        redirectUri: string
+        redirectUri: string,
+        envPath: string
     ) {
         this.clientId =
             process.env.SPOTIFY_CLIENT_ID ?? "";
@@ -25,6 +28,9 @@ export default class SpotifyAuth {
 
         this.refreshToken =
             process.env.SPOTIFY_REFRESH_TOKEN ?? null;
+
+        this.envPath =
+            envPath;
     }
 
     isAuthenticated(): boolean {
@@ -92,7 +98,8 @@ export default class SpotifyAuth {
 
     }
 
-
+    //Using the PKCE verifier and credentials
+    //attempt to authenticate Spotify account 
     async authenticate(
             code:   string,
             state:  string,
@@ -164,7 +171,7 @@ export default class SpotifyAuth {
 
     }
 
-
+    //Refresh the access Token automatically using the RefreshToken
     private async refreshAccessToken(): Promise<void> {
         if (!this.refreshToken) {
             throw new Error(
@@ -213,7 +220,7 @@ export default class SpotifyAuth {
         }
     }
 
-
+    //attempt to get the AccessToken
     async getAccessToken(): Promise<string> {
         if (
             !this.accessToken ||
@@ -232,7 +239,7 @@ export default class SpotifyAuth {
         return this.accessToken;
     }
 
-
+    //save the RefreshToken to the env file
     private async saveRefreshToken(
         refreshToken: string
     ): Promise<void> {
@@ -241,7 +248,7 @@ export default class SpotifyAuth {
         try {
             content =
                 await fs.readFile(
-                    "spotify.env",
+                    this.envPath,
                     "utf8"
                 );
         } catch {
@@ -268,7 +275,7 @@ export default class SpotifyAuth {
         }
 
         await fs.writeFile(
-            "spotify.env",
+            this.envPath,
             content,
             "utf8"
         );
