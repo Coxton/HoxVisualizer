@@ -18,6 +18,7 @@ import SpotifyManager
     from "../../integrations/spotify/SpotifyManager";
 
 import IntegrationManager from "../../integrations/IntegrationManager";
+import ApplicationStateManager from "./state/ApplicationStateManager";
 
 
     // create Electron Window and load preload file
@@ -76,7 +77,22 @@ app.whenReady().then( async() => {
             spotifyManager
         );
 
-    
+    const applicationState =
+        new ApplicationStateManager()    
+
+
+    integrationManager.onEvent(
+        (event) => {
+            applicationState.handleEvent(
+                event
+            );
+
+            console.log(
+                "Application state:",
+                applicationState.current
+            );
+        }
+    );
 
 
     integrationManager.start();
