@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
+import type { ApplicationState } from "../main/state/ApplicationState";
 
 //expose audio to the Frontend
 contextBridge.exposeInMainWorld("audio", {
@@ -10,5 +11,34 @@ contextBridge.exposeInMainWorld("audio", {
              callback(data);
              
         });
+    }
+});
+
+
+//expose application state to the Frontend
+contextBridge.exposeInMainWorld("application", {
+
+    onStateChange(
+        callback: (state: ApplicationState) => void
+    ): () => void {
+
+        const listener = (
+            _event: Electron.IpcRendererEvent,
+            state: ApplicationState
+        ) => {
+            callback(state);
+        };
+
+        ipcRenderer.on(
+            "application-state",
+            listener
+        );
+
+        return () => {
+            ipcRenderer.removeListener(
+                "application-state",
+                listener
+            );
+        };
     }
 });

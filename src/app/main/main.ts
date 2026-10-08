@@ -7,6 +7,7 @@ import Server from "../../server/Server";
 import AudioManager from "../../audio/AudioManager";
 import AudioAnalyzer from "../../audio/analysis/AudioAnalyzer";
 import AudioIPC from "./ipc/AudioIPC";
+import ApplicationIPC from "./ipc/ApplicationIPC";
 
 import VisualResponseLimiter from "../../audio/visual/VisualResponseLimiter.mjs";
 
@@ -52,6 +53,8 @@ import ApplicationStateManager from "./state/ApplicationStateManager";
 // start the main Process
 app.whenReady().then( async() => {
 
+    const win = createWindow();
+
     // Remove the Electron application menu
     //Menu.setApplicationMenu(null);
 
@@ -80,17 +83,21 @@ app.whenReady().then( async() => {
     const applicationState =
         new ApplicationStateManager()    
 
+    const applicationIPC =
+        new ApplicationIPC(win);
+
 
     integrationManager.onEvent(
         (event) => {
-            applicationState.handleEvent(
-                event
-            );
+            applicationState.handleEvent(event);
+        }
+    );
 
-            console.log(
-                "Application state:",
-                applicationState.current
-            );
+    applicationState.onChange(
+        (state) => {
+
+            applicationIPC.sendState(state);
+        
         }
     );
 
@@ -106,11 +113,13 @@ app.whenReady().then( async() => {
 
     server.start();
 
-    const win = createWindow();
+
 
         const audioManager = new AudioManager();
         const audioAnalyzer = new AudioAnalyzer();
         const audioIPC = new AudioIPC(win);
+
+
 
         const visualResponseLimiter =
             new VisualResponseLimiter();

@@ -1,5 +1,6 @@
 import FrontendRenderer from "./FrontendRenderer";
 import WebSocketClient from "./WebSocketClient";
+import ApplicationStateClient from "./ApplicationStateClient";
 
 const params =
     new URLSearchParams(
@@ -24,6 +25,11 @@ if (useWebSocket) {
         );
 
 } else {
+
+    const applicationState =
+        new ApplicationStateClient();
+
+    applicationState.start();
 
     renderer =
         new FrontendRenderer(
