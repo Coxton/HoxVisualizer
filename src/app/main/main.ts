@@ -1,3 +1,4 @@
+
 import { app, BrowserWindow, Menu } from "electron/main";
 import path from "node:path";
 import dotenv from "dotenv";
@@ -74,37 +75,17 @@ app.whenReady().then( async() => {
         new SpotifyManager(
             spotifyClient
         );
-     
+
     const integrationManager =
         new IntegrationManager(
             spotifyManager
         );
 
     const applicationState =
-        new ApplicationStateManager()    
+        new ApplicationStateManager();
 
     const applicationIPC =
         new ApplicationIPC(win);
-
-
-    integrationManager.onEvent(
-        (event) => {
-            applicationState.handleEvent(event);
-        }
-    );
-
-    applicationState.onChange(
-        (state) => {
-
-            applicationIPC.sendState(state);
-        
-        }
-    );
-
-
-    integrationManager.start();
-
-
 
     const server =
         new Server(
@@ -114,34 +95,48 @@ app.whenReady().then( async() => {
     server.start();
 
 
+applicationState.onChange(
+    (state) => {
 
-        const audioManager = new AudioManager();
-        const audioAnalyzer = new AudioAnalyzer();
-        const audioIPC = new AudioIPC(win);
-
-
-
-        const visualResponseLimiter =
-            new VisualResponseLimiter();
+        applicationIPC.sendState(state);
 
 
+        server.broadcastPlayback(state.spotify);
+
+    }
+);
 
 
-        // start processes once the window has finished loading
-        win.webContents.once("did-finish-load", async () => {
+    integrationManager.onEvent(
+        (event) => {
+            applicationState.handleEvent(event);
+        }
+    );
 
-            // start the SystemAudio Pipeline
-            audioManager.startDefaultAudio((frame) => {
-                const analyzed = audioAnalyzer.analyze(frame);
+    integrationManager.start();
 
-                //convert analysation Audio to visual Audio
-                const visualAudio =
-                    visualResponseLimiter.process(analyzed);
+    const audioManager = new AudioManager();
+    const audioAnalyzer = new AudioAnalyzer();
+    const audioIPC = new AudioIPC(win);
 
-                audioIPC.sendAudioData(visualAudio);
+    const visualResponseLimiter =
+        new VisualResponseLimiter();
 
-                server.broadcast(visualAudio);
-            });
+    // start processes once the window has finished loading
+    win.webContents.once("did-finish-load", async () => {
 
+        // start the SystemAudio Pipeline
+        audioManager.startDefaultAudio((frame) => {
+            const analyzed = audioAnalyzer.analyze(frame);
+
+            //convert analysation Audio to visual Audio
+            const visualAudio =
+                visualResponseLimiter.process(analyzed);
+
+            audioIPC.sendAudioData(visualAudio);
+
+            server.broadcast(visualAudio);
         });
+
     });
+});

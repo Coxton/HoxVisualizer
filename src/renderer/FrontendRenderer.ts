@@ -2,6 +2,7 @@
 import Visualizer from "../visualizer/Visualizer.mjs";
 import type { VisualAudio } from "../audio/visual/models/VisualAudio.mjs";
 import type { ApplicationState } from "../app/main/state/ApplicationState";
+import type { SpotifyPlayback } from "../integrations/models/SpotifyTrack";
 import NowPlayingHUD from "./components/hud/NowPlayingHUD";
 import LayoutLoader from "./LayoutLoader";
 
@@ -11,8 +12,13 @@ export default class FrontendRenderer {
 
     private nowPlayingHUD: NowPlayingHUD | null = null;
     private hudContainer: HTMLElement | null = null;
+
     private unsubscribeState: (() => void) | null = null;
     private pendingState: ApplicationState | null = null;
+
+    
+    private pendingPlayback: SpotifyPlayback | null | undefined =
+        undefined;
 
     constructor(
         private readonly onData: (
@@ -35,11 +41,14 @@ export default class FrontendRenderer {
         if (this.onStateChange) {
             this.unsubscribeState = this.onStateChange((state) => {
                 this.pendingState = state;
-                this.nowPlayingHUD?.update(state.spotify);
+
+                // Electron playback updates.
+                if (this.pendingPlayback === undefined) {
+                    this.nowPlayingHUD?.update(state.spotify);
+                }
             });
         }
     }
-
 
     async initializeHUD(
         layout: string,
@@ -60,7 +69,10 @@ export default class FrontendRenderer {
 
             this.nowPlayingHUD = new NowPlayingHUD(container);
 
-            if (this.pendingState) {
+            // Prefer WebSocket playback when it has been received.
+            if (this.pendingPlayback !== undefined) {
+                this.nowPlayingHUD.update(this.pendingPlayback);
+            } else if (this.pendingState) {
                 this.nowPlayingHUD.update(
                     this.pendingState.spotify
                 );
@@ -72,9 +84,13 @@ export default class FrontendRenderer {
         }
     }
 
-
     update(data: VisualAudio): void {
         this.visualizer.update(data);
+    }
+
+    updatePlayback(playback: SpotifyPlayback | null): void {
+        this.pendingPlayback = playback;
+        this.nowPlayingHUD?.update(playback);
     }
 
     stop(): void {

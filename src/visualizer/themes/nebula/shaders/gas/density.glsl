@@ -213,7 +213,7 @@ float trebleLayer =
         float cloudDensity =
         bassLayer * 0.31 +
         lowMidLayer * 0.25 +
-        midLayer * 0.22 +
+    midLayer * 0.22 +
         highMidLayer * 0.12 +
         vocalLayer * 0.05 +
         trebleLayer * 0.05 +

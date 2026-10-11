@@ -9,13 +9,18 @@ const useWebSocket = params.get("source") === "websocket";
 
 let renderer: FrontendRenderer;
 let applicationState: ApplicationStateClient | null = null;
+let webSocketClient: WebSocketClient | null = null;
 
 if (useWebSocket) {
-    const webSocketClient = new WebSocketClient();
+    webSocketClient = new WebSocketClient();
 
     renderer = new FrontendRenderer(
         webSocketClient.onData.bind(webSocketClient)
     );
+
+    webSocketClient.onPlayback((playback) => {
+        renderer.updatePlayback(playback);
+    });
 } else {
     applicationState = new ApplicationStateClient();
 
@@ -28,8 +33,6 @@ if (useWebSocket) {
 renderer.start();
 applicationState?.start();
 
-
 renderer.initializeHUD(nowPlayingLayout).catch((error) => {
     console.error("Failed to initialize Now Playing HUD:", error);
 });
-

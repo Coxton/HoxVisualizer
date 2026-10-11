@@ -48,11 +48,20 @@ export default class SpotifyManager {
         return this.currentPlayback;
     }
 
+
     //start the polling process
     start(): void {
         if (this.pollingInterval) {
             return;
         }
+
+        this.getCurrentPlayback()
+            .catch((error) => {
+                console.error(
+                    "Spotify polling failed:",
+                    error
+                );
+            });
 
         this.pollingInterval =
             setInterval(
@@ -68,6 +77,7 @@ export default class SpotifyManager {
                 SpotifyManager.POLLING_INTERVAL_MS
             );
     }
+
 
     //stop the polling process
     stop(): void {
