@@ -1,122 +1,119 @@
-export interface NowPlayingTrack {
-    title: string;
-    artist: string;
-    artworkUrl?: string;
-}
 
-export default class NowPlaying {
-    private readonly titleElement: HTMLElement;
-    private readonly artistElement: HTMLElement;
-    private readonly artworkElement: HTMLElement;
-    private readonly statusElement: HTMLElement;
+import type { SpotifyPlayback } from "../../../integrations/models/SpotifyTrack";
+
+export default class NowPlayingHUD {
+    private readonly title: HTMLElement;
+    private readonly artist: HTMLElement;
+    private readonly artwork: HTMLImageElement;
+    private readonly artworkPlaceholder: HTMLElement;
+    private readonly status: HTMLElement;
     private readonly statusLabel: HTMLElement;
+    private readonly titleContainer: HTMLElement;
 
     constructor(root: HTMLElement) {
-        const title = root.querySelector<HTMLElement>(
-            "#now-playing-title"
+        this.title = this.getElement(root, "#now-playing-title");
+        this.artist = this.getElement(root, "#now-playing-artist");
+        this.artwork = this.getElement(
+            root,
+            "#now-playing-artwork"
+        ) as HTMLImageElement;
+        this.artworkPlaceholder = this.getElement(
+            root,
+            "#now-playing-artwork-placeholder"
         );
-
-        const artist = root.querySelector<HTMLElement>(
-            "#now-playing-artist"
+        this.status = this.getElement(root, "#now-playing-status");
+        this.statusLabel = this.getElement(
+            root,
+            "#now-playing-status-label"
         );
-
-        const artwork = root.querySelector<HTMLElement>(
-            ".now-playing__artwork"
+        this.titleContainer = this.getElement(
+            root,
+            ".now-playing__title-container"
         );
-
-        const status = root.querySelector<HTMLElement>(
-            "#now-playing-status"
-        );
-
-        const statusLabel = root.querySelector<HTMLElement>(
-            ".now-playing__status-label"
-        );
-
-        if (
-            !title ||
-            !artist ||
-            !artwork ||
-            !status ||
-            !statusLabel
-        ) {
-            throw new Error(
-                "NowPlaying: required HTML elements are missing."
-            );
-        }
-
-        this.titleElement = title;
-        this.artistElement = artist;
-        this.artworkElement = artwork;
-        this.statusElement = status;
-        this.statusLabel = statusLabel;
     }
 
-    setTrack(track: NowPlayingTrack | null): void {
-        if (!track) {
-            this.titleElement.textContent = "Nothing playing";
-            this.artistElement.textContent = "Waiting for Spotify";
+    update(playback: SpotifyPlayback | null): void {
+        const track = playback?.track ?? null;
 
-            this.setArtwork(null);
-            this.setStatus("Waiting");
+        this.title.textContent = track?.title ?? "Nothing playing";
+        this.artist.textContent =
+            track?.artists.join(", ") || "Waiting for Spotify";
 
-            return;
-        }
-
-        this.titleElement.textContent = track.title;
-        this.artistElement.textContent = track.artist;
-
-        this.setArtwork(track.artworkUrl ?? null);
-        this.setStatus("Connected");
-    }
-
-    setStatus(status: string): void {
-        this.statusLabel.textContent = status;
-
-        this.statusElement.setAttribute(
-            "aria-label",
-            `Playback status: ${status}`
+        this.updateArtwork(track?.artworkUrl ?? null);
+        this.updateStatus(
+            track ? playback?.isPlaying ?? false : false
         );
-
-        this.statusElement.dataset.status =
-            status.toLowerCase();
+        this.updateTitleScrolling();
     }
 
-    private setArtwork(url: string | null): void {
-        this.artworkElement
-            .querySelector(".now-playing__artwork-image")
-            ?.remove();
+    private updateArtwork(url: string | null): void {
+        this.artwork.onload = () => {
+            this.artwork.hidden = false;
+            this.artworkPlaceholder.hidden = true;
+        };
 
-        const placeholder =
-            this.artworkElement.querySelector<HTMLElement>(
-                ".now-playing__artwork-placeholder"
-            );
+        this.artwork.onerror = () => {
+            this.artwork.hidden = true;
+            this.artworkPlaceholder.hidden = false;
+        };
 
         if (!url) {
-            if (placeholder) {
-                placeholder.hidden = false;
-            }
-
+            this.artwork.removeAttribute("src");
+            this.artwork.hidden = true;
+            this.artworkPlaceholder.hidden = false;
             return;
         }
 
-        const image = document.createElement("img");
+        if (this.artwork.getAttribute("src") !== url) {
+            this.artwork.hidden = true;
+            this.artworkPlaceholder.hidden = false;
+            this.artwork.src = url;
+        } else if (
+            this.artwork.complete &&
+            this.artwork.naturalWidth > 0
+        ) {
+            this.artwork.hidden = false;
+            this.artworkPlaceholder.hidden = true;
+        }
+    }
 
-        image.className = "now-playing__artwork-image";
-        image.alt = "Album artwork";
-        image.src = url;
+    private updateStatus(isPlaying: boolean): void {
+        this.statusLabel.textContent = isPlaying ? "Playing" : "Paused";
+        this.status.classList.toggle("is-playing", isPlaying);
+        this.status.classList.toggle("is-paused", !isPlaying);
+    }
 
-        image.addEventListener("error", () => {
-            image.remove();
+    private updateTitleScrolling(): void {
+        this.title.classList.remove("is-scrolling");
+        this.title.style.removeProperty("--title-overflow");
 
-            if (placeholder) {
-                placeholder.hidden = false;
+        requestAnimationFrame(() => {
+            const overflow =
+                this.title.scrollWidth -
+                this.titleContainer.clientWidth;
+
+            if (overflow > 8) {
+                this.title.style.setProperty(
+                    "--title-overflow",
+                    `${overflow}px`
+                );
+                this.title.classList.add("is-scrolling");
             }
         });
+    }
 
-        if (placeholder) {
-            placeholder.hidden = true;
+    private getElement(
+        root: HTMLElement,
+        selector: string
+    ): HTMLElement {
+        const element = root.querySelector<HTMLElement>(selector);
+
+        if (!element) {
+            throw new Error(
+                `NowPlayingHUD element not found: ${selector}`
+            );
         }
 
-        this.artworkElement.appendChild(image);
+        return element;
     }
 }

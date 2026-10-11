@@ -1,10 +1,21 @@
+
 <section
     id="now-playing"
     class="now-playing"
     aria-label="Now playing"
 >
     <div class="now-playing__artwork">
-        <div class="now-playing__artwork-placeholder">
+        <img
+            id="now-playing-artwork"
+            class="now-playing__artwork-image"
+            alt="Album artwork"
+            hidden
+        />
+
+        <div
+            id="now-playing-artwork-placeholder"
+            class="now-playing__artwork-placeholder"
+        >
             <span aria-hidden="true">♫</span>
         </div>
     </div>
@@ -14,12 +25,14 @@
             NOW PLAYING
         </span>
 
-        <h2
-            id="now-playing-title"
-            class="now-playing__title"
-        >
-            Nothing playing
-        </h2>
+        <div class="now-playing__title-container">
+            <h2
+                id="now-playing-title"
+                class="now-playing__title"
+            >
+                Nothing playing
+            </h2>
+        </div>
 
         <p
             id="now-playing-artist"
@@ -31,10 +44,13 @@
 
     <div
         id="now-playing-status"
-        class="now-playing__status"
+        class="now-playing__status is-paused"
         aria-label="Playback status"
     >
         <span class="now-playing__status-indicator"></span>
-        <span class="now-playing__status-label">Waiting</span>
+        <span id="now-playing-status-label"
+              class="now-playing__status-label">
+            Waiting
+        </span>
     </div>
 </section>
