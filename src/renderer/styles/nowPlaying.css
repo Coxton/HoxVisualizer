@@ -1,0 +1,113 @@
+
+@font-face {
+    font-family: "Orbitron";
+    src: url("../assets/fonts/orbitron/Orbitron-VariableFont_wght.ttf")
+        format("truetype");
+    font-weight: 400 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+#layout-container{
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+}
+
+
+.now-playing {
+    font-family: "Orbitron", sans-serif;
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    padding: 16px;
+    max-width: 420px;
+    width: 100%;
+
+    color: #ffffff;
+    background: rgba(12, 12, 20, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+
+    backdrop-filter: blur(12px);
+}
+
+.now-playing__artwork {
+    display: block;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+
+    object-fit: cover;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.now-playing__details {
+    min-width: 0;
+    letter-spacing: 1.5px;
+}
+
+.now-playing__title-container {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.now-playing__title {
+    margin: 0 0 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: none;
+    display: block;
+    width: fit-content;
+
+    font-size: 18px;
+    font-weight: 600;
+    
+}
+
+.now-playing__title.is-scrolling {
+    animation: title-scroll 6s ease-in-out infinite alternate;
+}
+
+.now-playing__artist {
+    margin: 0 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.now-playing__status {
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+
+@keyframes title-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(
+            calc(-1 * var(--title-overflow, 0px))
+        );
+    }
+}
