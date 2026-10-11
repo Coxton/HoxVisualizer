@@ -134,13 +134,13 @@ void main()
         );
 
 
-        float sampleDensity =
-            getCloudDensity(
-                largeCloud,
-                mediumCloud,
-                fineCloud,
-                filamentNoise
-            );
+    float sampleDensity = getCloudDensity(
+        rayPosition,
+        largeCloud,
+        mediumCloud,
+        fineCloud,
+        filamentNoise
+    );
 
 
         float coreDistance =
@@ -212,7 +212,7 @@ void main()
         clamp(
             density,
             0.0,
-            0.72
+            0.82
         );
 
 

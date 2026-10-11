@@ -1,3 +1,4 @@
+
 import * as THREE from "three";
 
 import vertexShader
@@ -12,13 +13,9 @@ import type { VisualAudio }
 
 export default class NebulaGas {
 
-    readonly mesh:
-        THREE.Mesh;
+    readonly mesh: THREE.Mesh;
 
-
-    private readonly material:
-        THREE.ShaderMaterial;
-
+    private readonly material: THREE.ShaderMaterial;
 
     private bassResponse = 0;
 
@@ -37,7 +34,6 @@ export default class NebulaGas {
                 6.8,
                 9.7
             );
-
 
         this.material =
             new THREE.ShaderMaterial({
@@ -73,26 +69,15 @@ export default class NebulaGas {
                     },
 
                     uCameraPosition: {
-                        value:
-                            new THREE.Vector3()
+                        value: new THREE.Vector3()
                     },
 
                     uLightPosition: {
-                        value:
-                            new THREE.Vector3(
-                                0,
-                                0,
-                                0
-                            )
+                        value: new THREE.Vector3(0, 0, 0)
                     },
 
                     uCorePosition: {
-                        value:
-                            new THREE.Vector3(
-                                0,
-                                0,
-                                0
-                            )
+                        value: new THREE.Vector3(0, 0, 0)
                     },
 
                     uCoreIntensity: {
@@ -100,39 +85,19 @@ export default class NebulaGas {
                     },
 
                     uOuterColor: {
-                        value:
-                            new THREE.Color(
-                                0.65,
-                                0.01,
-                                0.35
-                            )
+                        value: new THREE.Color(0.65, 0.01, 0.35)
                     },
 
                     uMidColor: {
-                        value:
-                            new THREE.Color(
-                                1.0,
-                                0.06,
-                                0.55
-                            )
+                        value: new THREE.Color(1.0, 0.06, 0.55)
                     },
 
                     uVioletColor: {
-                        value:
-                            new THREE.Color(
-                                0.28,
-                                0.08,
-                                0.85
-                            )
+                        value: new THREE.Color(0.28, 0.08, 0.85)
                     },
 
                     uInnerColor: {
-                        value:
-                            new THREE.Color(
-                                0.03,
-                                0.38,
-                                1.0
-                            )
+                        value: new THREE.Color(0.03, 0.38, 1.0)
                     },
 
                     uVocalIntensity: {
@@ -148,10 +113,8 @@ export default class NebulaGas {
 
                 depthWrite: false,
 
-                side:
-                    THREE.BackSide
+                side: THREE.BackSide
             });
-
 
         this.mesh =
             new THREE.Mesh(
@@ -159,10 +122,7 @@ export default class NebulaGas {
                 this.material
             );
 
-
-        scene.add(
-            this.mesh
-        );
+        scene.add(this.mesh);
     }
 
 
@@ -173,162 +133,93 @@ export default class NebulaGas {
         corePosition: THREE.Vector3
     ): void {
 
-        this.material
-            .uniforms
-            .uTime
-            .value =
+        this.material.uniforms.uTime.value =
             elapsedTime;
-
 
         const targetBass =
             audio?.bass ?? 0;
-
 
         const bassResponse =
             targetBass > this.bassResponse
                 ? 0.10
                 : 0.045;
 
-
         this.bassResponse +=
-            (
-                targetBass -
-                this.bassResponse
-            ) *
+            (targetBass - this.bassResponse) *
             bassResponse;
-
 
         const targetLowMid =
             audio?.lowMid ?? 0;
-
 
         const lowMidResponse =
             targetLowMid > this.lowMidResponse
                 ? 0.12
                 : 0.05;
 
-
         this.lowMidResponse +=
-            (
-                targetLowMid -
-                this.lowMidResponse
-            ) *
+            (targetLowMid - this.lowMidResponse) *
             lowMidResponse;
-
 
         const targetMid =
             audio?.mid ?? 0;
-
 
         const midResponse =
             targetMid > this.visualMid
                 ? 0.14
                 : 0.035;
 
-
         this.visualMid +=
-            (
-                targetMid -
-                this.visualMid
-            ) *
+            (targetMid - this.visualMid) *
             midResponse;
 
-
         const targetVocal =
-            (
-                (audio?.mid ?? 0) * 0.6 +
-                (audio?.highMid ?? 0) * 0.4
-            );
-
+            (audio?.mid ?? 0) * 0.6 +
+            (audio?.highMid ?? 0) * 0.4;
 
         const vocalResponse =
             targetVocal > this.vocalResponse
                 ? 0.11
                 : 0.04;
 
-
         this.vocalResponse +=
-            (
-                targetVocal -
-                this.vocalResponse
-            ) *
+            (targetVocal - this.vocalResponse) *
             vocalResponse;
 
-
-        this.material
-            .uniforms
-            .uBass
-            .value =
+        this.material.uniforms.uBass.value =
             this.bassResponse;
 
-
-        this.material
-            .uniforms
-            .uLowMid
-            .value =
+        this.material.uniforms.uLowMid.value =
             this.lowMidResponse;
 
-
-        this.material
-            .uniforms
-            .uMid
-            .value =
+        this.material.uniforms.uMid.value =
             this.visualMid;
 
-        this.material
-            .uniforms
-            .uHighMid
-            .value =
+        this.material.uniforms.uHighMid.value =
             audio?.highMid ?? 0;
 
+        this.material.uniforms.uTreble.value =
+            audio?.treble ?? 0;
 
-        this.material
-            .uniforms
-            .uTreble
-            .value =
-            audio?.treble ?? 0;    
+        this.material.uniforms.uImpact.value =
+            audio?.impact ?? 0;
 
-        this.material
-            .uniforms
-            .uImpact
-            .value =
-            audio?.impactEnvelope ?? 0;    
-
-
-        this.material
-            .uniforms
-            .uVocalIntensity
-            .value =
+        this.material.uniforms.uVocalIntensity.value =
             this.vocalResponse;
-
 
         const localCameraPosition =
             this.mesh.worldToLocal(
                 camera.position.clone()
             );
 
-
-        this.material
-            .uniforms
-            .uCameraPosition
-            .value
-            .copy(
-                localCameraPosition
-            );
-
+        this.material.uniforms.uCameraPosition.value
+            .copy(localCameraPosition);
 
         const localCorePosition =
             this.mesh.worldToLocal(
                 corePosition.clone()
             );
 
-
-        this.material
-            .uniforms
-            .uCorePosition
-            .value
-            .copy(
-                localCorePosition
-            );
+        this.material.uniforms.uCorePosition.value
+            .copy(localCorePosition);
     }
 }

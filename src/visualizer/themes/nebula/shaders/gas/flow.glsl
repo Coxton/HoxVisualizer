@@ -1,3 +1,4 @@
+
 vec3 flowPosition(
     vec3 position,
     float time
@@ -29,16 +30,12 @@ vec3 flowPosition(
     float impactResponse =
         getImpactResponse();
 
-
     vec3 relativePosition =
         position -
         uCorePosition;
 
     float distanceFromCore =
-        length(
-            relativePosition
-        );
-
+        length(relativePosition);
 
     float coreInfluence =
         1.0 -
@@ -48,14 +45,12 @@ vec3 flowPosition(
             distanceFromCore
         );
 
-
     float outerInfluence =
         smoothstep(
             2.0,
             7.0,
             distanceFromCore
         );
-
 
     float innerInfluence =
         1.0 -
@@ -65,18 +60,11 @@ vec3 flowPosition(
             distanceFromCore
         );
 
-
-    float bassMotion =
-        bassResponse *
-        0.75;
-
-
     float bassExpansion =
         1.0 +
-        bassMotion *
-        0.16 *
+        bassResponse *
+        0.18 *
         coreInfluence;
-
 
     flowedPosition =
         uCorePosition +
@@ -86,12 +74,11 @@ vec3 flowPosition(
         ) *
         bassExpansion;
 
-
     float impactExpansion =
         1.0 +
         impactResponse *
-        0.10;
-
+        0.14 *
+        coreInfluence;
 
     flowedPosition =
         uCorePosition +
@@ -101,63 +88,48 @@ vec3 flowPosition(
         ) *
         impactExpansion;
 
-
     vec3 impactDirection =
         normalize(
             relativePosition +
-            vec3(
-                0.0001
-            )
+            vec3(0.0001)
         );
-
 
     flowedPosition +=
         impactDirection *
         impactResponse *
-        0.16;
-
+        0.20 *
+        coreInfluence;
 
     float orbitalStrength =
-        0.16 +
-        lowMidResponse * 0.30 +
-        bassResponse * 0.06;
-
+        0.10 +
+        lowMidResponse * 0.34 +
+        bassResponse * 0.05;
 
     float orbitalAngle =
         slowTime +
         distanceFromCore * 0.18;
 
-
     float orbitalSin =
-        sin(
-            orbitalAngle
-        );
+        sin(orbitalAngle);
 
     float orbitalCos =
-        cos(
-            orbitalAngle
-        );
-
+        cos(orbitalAngle);
 
     vec3 orbitalOffset =
         vec3(
             relativePosition.x * orbitalCos -
             relativePosition.z * orbitalSin -
             relativePosition.x,
-
             0.0,
-
             relativePosition.x * orbitalSin +
             relativePosition.z * orbitalCos -
             relativePosition.z
         );
 
-
     flowedPosition +=
         orbitalOffset *
         orbitalStrength *
         coreInfluence;
-
 
     flowedPosition.x +=
         sin(
@@ -169,7 +141,6 @@ vec3 flowPosition(
             lowMidResponse * 0.55
         );
 
-
     flowedPosition.y +=
         sin(
             position.x * 0.22 +
@@ -179,7 +150,6 @@ vec3 flowPosition(
             0.08 +
             lowMidResponse * 0.75
         );
-
 
     flowedPosition.z +=
         cos(
@@ -191,10 +161,8 @@ vec3 flowPosition(
             lowMidResponse * 0.85
         );
 
-
     float turbulenceTime =
         time * 0.11;
-
 
     float turbulenceX =
         sin(
@@ -203,14 +171,12 @@ vec3 flowPosition(
             turbulenceTime
         );
 
-
     float turbulenceY =
         cos(
             position.z * 1.25 +
             position.x * 0.55 +
             turbulenceTime * 0.82
         );
-
 
     float turbulenceZ =
         sin(
@@ -219,28 +185,23 @@ vec3 flowPosition(
             turbulenceTime * 0.94
         );
 
-
     flowedPosition.x +=
         turbulenceX *
         midResponse *
         1.45;
-
 
     flowedPosition.y +=
         turbulenceY *
         midResponse *
         1.25;
 
-
     flowedPosition.z +=
         turbulenceZ *
         midResponse *
         1.50;
 
-
     float highMidTime =
         time * 0.16;
-
 
     float highMidX =
         sin(
@@ -249,14 +210,12 @@ vec3 flowPosition(
             highMidTime
         );
 
-
     float highMidY =
         cos(
             position.z * 2.00 +
             position.x * 1.45 +
             highMidTime * 0.87
         );
-
 
     float highMidZ =
         sin(
@@ -265,36 +224,32 @@ vec3 flowPosition(
             highMidTime * 0.93
         );
 
-
     flowedPosition.x +=
         highMidX *
         highMidResponse *
-        0.48 *
+        0.62 *
         (
-            0.35 +
-            innerInfluence * 0.65
+            0.30 +
+            innerInfluence * 0.70
         );
-
 
     flowedPosition.y +=
         highMidY *
         highMidResponse *
-        0.55 *
+        0.68 *
         (
-            0.35 +
-            innerInfluence * 0.65
+            0.30 +
+            innerInfluence * 0.70
         );
-
 
     flowedPosition.z +=
         highMidZ *
         highMidResponse *
-        0.52 *
+        0.64 *
         (
-            0.35 +
-            innerInfluence * 0.65
+            0.30 +
+            innerInfluence * 0.70
         );
-
 
     float vocalFlow =
         sin(
@@ -303,7 +258,6 @@ vec3 flowPosition(
             time * 0.18
         );
 
-
     float vocalTwist =
         cos(
             position.y * 2.20 +
@@ -311,13 +265,11 @@ vec3 flowPosition(
             time * 0.15
         );
 
-
     flowedPosition.y +=
         vocalFlow *
         vocalResponse *
         0.55 *
         innerInfluence;
-
 
     flowedPosition.x +=
         vocalTwist *
@@ -325,10 +277,8 @@ vec3 flowPosition(
         0.60 *
         innerInfluence;
 
-
     float trebleTime =
         time * 0.22;
-
 
     float trebleX =
         sin(
@@ -337,14 +287,12 @@ vec3 flowPosition(
             trebleTime
         );
 
-
     float trebleY =
         cos(
             position.z * 3.80 +
             position.x * 2.80 +
             trebleTime * 0.91
         );
-
 
     float trebleZ =
         sin(
@@ -353,27 +301,23 @@ vec3 flowPosition(
             trebleTime * 1.07
         );
 
-
     flowedPosition.x +=
         trebleX *
         trebleResponse *
-        0.14 *
+        0.22 *
         outerInfluence;
-
 
     flowedPosition.y +=
         trebleY *
         trebleResponse *
-        0.12 *
+        0.20 *
         outerInfluence;
-
 
     flowedPosition.z +=
         trebleZ *
         trebleResponse *
-        0.15 *
+        0.23 *
         outerInfluence;
-
 
     float secondaryWave =
         sin(
@@ -382,12 +326,10 @@ vec3 flowPosition(
             time * 0.08
         );
 
-
     flowedPosition.y +=
         secondaryWave *
         lowMidResponse *
         0.45;
-
 
     return flowedPosition;
 }

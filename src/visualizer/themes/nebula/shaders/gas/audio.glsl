@@ -1,135 +1,102 @@
+
 float getBassResponse()
 {
-    return smoothstep(
-        0.12,
-        0.75,
-        uBass
+    return pow(
+        clamp(uBass, 0.0, 1.0),
+        0.78
     );
 }
-
 
 float getLowMidResponse()
 {
-    return smoothstep(
-        0.10,
-        0.70,
-        uLowMid
+    return pow(
+        clamp(uLowMid, 0.0, 1.0),
+        0.82
     );
 }
-
 
 float getMidResponse()
 {
-    return smoothstep(
-        0.12,
-        0.70,
-        uMid
+    return pow(
+        clamp(uMid, 0.0, 1.0),
+        0.78
     );
 }
-
 
 float getHighMidResponse()
 {
-    return smoothstep(
-        0.10,
-        0.65,
-        uHighMid
+    return pow(
+        clamp(uHighMid, 0.0, 1.0),
+        0.72
     );
 }
-
 
 float getTrebleResponse()
 {
-    return smoothstep(
-        0.08,
-        0.60,
-        uTreble
+    return pow(
+        clamp(uTreble, 0.0, 1.0),
+        0.68
     );
 }
-
 
 float getVocalResponse()
 {
-    return smoothstep(
-        0.10,
-        0.65,
-        uVocalIntensity
+    return pow(
+        clamp(uVocalIntensity, 0.0, 1.0),
+        0.78
     );
 }
-
 
 float getImpactResponse()
 {
     return smoothstep(
-        0.08,
-        0.65,
-        uImpact
+        0.04,
+        0.72,
+        clamp(uImpact, 0.0, 1.0)
     );
 }
-
 
 float getAudioIllumination()
 {
     float bassEnergy =
-        smoothstep(
-            0.18,
-            0.75,
-            uBass
-        );
+        getBassResponse();
+
+    float lowMidEnergy =
+        getLowMidResponse();
 
     float midEnergy =
-        smoothstep(
-            0.16,
-            0.70,
-            uMid
-        );
+        getMidResponse();
 
     float highMidEnergy =
-        smoothstep(
-            0.12,
-            0.65,
-            uHighMid
-        );
+        getHighMidResponse();
 
     float trebleEnergy =
-        smoothstep(
-            0.10,
-            0.60,
-            uTreble
-        );
+        getTrebleResponse();
 
     float vocalEnergy =
-        smoothstep(
-            0.14,
-            0.65,
-            uVocalIntensity
-        );
+        getVocalResponse();
 
-    return max(
-        max(
-            bassEnergy,
-            midEnergy
-        ),
-        max(
-            max(
-                highMidEnergy,
-                trebleEnergy
-            ),
-            vocalEnergy
-        )
+    return clamp(
+        bassEnergy * 0.18 +
+        lowMidEnergy * 0.16 +
+        midEnergy * 0.20 +
+        highMidEnergy * 0.20 +
+        trebleEnergy * 0.12 +
+        vocalEnergy * 0.14,
+        0.0,
+        1.0
     );
 }
-
 
 float getAudioDensity()
 {
     return
         1.0 +
-        uBass * 0.55 +
-        uLowMid * 0.30 +
-        uMid * 0.45 +
-        uHighMid * 0.30 +
-        uTreble * 0.18 +
-        uVocalIntensity * 0.45 +
-        getImpactResponse() * 0.35;
+        getBassResponse() * 0.34 +
+        getLowMidResponse() * 0.24 +
+        getMidResponse() * 0.30 +
+        getHighMidResponse() * 0.30 +
+        getTrebleResponse() * 0.24 +
+        getVocalResponse() * 0.24 +
+        getImpactResponse() * 0.18;
 }

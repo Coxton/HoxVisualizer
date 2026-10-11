@@ -4,6 +4,8 @@ float getIllumination(
     float audioIllumination
 )
 {
+    float illumination = 0.0;
+
     float innerRegion =
         1.0 -
         smoothstep(
@@ -12,14 +14,12 @@ float getIllumination(
             coreDistance
         );
 
-
     float outerRegion =
         smoothstep(
             2.0,
             7.2,
             coreDistance
         );
-
 
     float coreLight =
         1.0 -
@@ -29,13 +29,11 @@ float getIllumination(
             coreDistance
         );
 
-
     float lightDistance =
         length(
             rayPosition -
             uLightPosition
         );
-
 
     float lightFalloff =
         1.0 -
@@ -45,37 +43,27 @@ float getIllumination(
             lightDistance
         );
 
-
-    float illumination =
-        0.10;
-
-
     illumination +=
         lightFalloff *
-        1.8;
-
+        1.75;
 
     illumination +=
         coreLight *
         uCoreIntensity *
-        0.55;
-
+        0.58;
 
     illumination +=
         audioIllumination *
         outerRegion *
-        0.85;
-
+        0.72;
 
     illumination +=
         audioIllumination *
         innerRegion *
-        1.00;
-
+        0.82;
 
     return illumination;
 }
-
 
 float getEmission(
     float sampleDensity,
@@ -90,7 +78,6 @@ float getEmission(
             coreDistance
         );
 
-
     float outerRegion =
         smoothstep(
             2.0,
@@ -98,45 +85,60 @@ float getEmission(
             coreDistance
         );
 
-
     float bassEnergy =
-        uBass *
-        1.8;
-
+        getBassResponse();
 
     float midEnergy =
-        uMid *
-        1.6;
+        getMidResponse();
 
+    float highMidEnergy =
+        getHighMidResponse();
+
+    float trebleEnergy =
+        getTrebleResponse();
 
     float vocalEnergy =
-        uVocalIntensity *
-        2.0;
+        getVocalResponse();
 
+    float impactEnergy =
+        getImpactResponse();
 
     return
         sampleDensity *
         (
             bassEnergy *
             outerRegion *
-            0.020 +
+            0.018 +
 
             midEnergy *
             innerRegion *
-            0.028 +
+            0.020 +
+
+            highMidEnergy *
+            innerRegion *
+            0.018 +
+
+            trebleEnergy *
+            outerRegion *
+            0.012 +
 
             vocalEnergy *
             innerRegion *
-            0.035
+            0.022 +
+
+            impactEnergy *
+            innerRegion *
+            0.025
         );
 }
-
 
 float getAudioGlow()
 {
     return
         1.0 +
-        uBass * 0.18 +
-        uMid * 0.26 +
-        uVocalIntensity * 0.34;
+        getBassResponse() * 0.14 +
+        getMidResponse() * 0.16 +
+        getHighMidResponse() * 0.12 +
+        getTrebleResponse() * 0.08 +
+        getVocalResponse() * 0.14;
 }
